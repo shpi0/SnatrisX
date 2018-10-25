@@ -126,7 +126,7 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void norMoveVector() {
-        moveVector.set(destVector.cpy().sub(initVector).nor().scl(0.01f));
+        moveVector.set(destVector.cpy().sub(initVector).nor().scl(worldBounds.getWidth() / 200f));
     }
 
     @Override

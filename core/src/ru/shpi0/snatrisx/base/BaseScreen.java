@@ -13,7 +13,7 @@ import ru.shpi0.snatrisx.math.Rect;
 
 public class BaseScreen implements Screen, InputProcessor {
 
-    private static final float SCREEN_HEIGHT = 1f;
+    private static final float SCREEN_HEIGHT = 42f;
 
     protected SpriteBatch batch;
 
