@@ -4,38 +4,47 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.shpi0.snatrisx.base.BaseScreen;
 
 public class MenuScreen extends BaseScreen {
-    SpriteBatch batch;
+
     Texture img;
+    private static final float IMG_WIDTH = 0.75f; // Ширина текстуры в процентах от ширины экрана
+    private float imgWidth; // Ширина и высота текстуры в новой системе координат
+    private float imgHeight; // используется для центровки изображения
+
     Texture square1;
 
-    private int width = 0;
-    private int height = 0;
-    private Vector2 initVector = new Vector2();
-    private Vector2 moveVector = new Vector2();
-    private Vector2 destVector = new Vector2();
-    private float alpha = 0f;
-    private boolean growUp = true;
-    private boolean leftMove = false;
-    private boolean rightMove = false;
-    private boolean upMove = false;
-    private boolean downMove = false;
+    private Vector2 initVector = new Vector2(); // Вектор текущей (начальной) позиции объекта
+    private Vector2 moveVector = new Vector2(); // Вектор направления движения
+    private Vector2 destVector = new Vector2(); // Вектор назначения
+    private Vector2 tempVector = new Vector2(); // Временный вектор
+    private float alpha = 0f; // Коэффициент прозрачности (альфа канал)
+
+    // Логические ключи
+    private boolean growUp = true; // Ключ для мерцания, если true, то яркость увеличивается, иначе уменьшается
+    private boolean leftMove = false; // Ключ движения объекта влево
+    private boolean rightMove = false; // Ключ движения объекта вправо
+    private boolean upMove = false; // Ключ движения объекта вверх
+    private boolean downMove = false; // Ключ движения объекта вниз
+    private boolean touched = false;// Ключ движения объекта до точки назначения при нажатии на экран
 
     @Override
     public void show() {
         super.show();
-        batch = new SpriteBatch();
         img = new Texture("snatris_logo.png");
         square1 = new Texture("square_blue.png");
-        width = Gdx.graphics.getWidth();
-        height = Gdx.graphics.getHeight();
-        initVector.x = (width - img.getWidth()) / 2;
-        initVector.y = (height - img.getHeight()) / 2;
+        initVector.x = 0;
+        initVector.y = 0;
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+        imgWidth = worldBounds.getWidth() * IMG_WIDTH;
+        imgHeight = (img.getHeight() / (float) img.getWidth()) * worldBounds.getWidth() * IMG_WIDTH;
     }
 
     @Override
@@ -45,31 +54,45 @@ public class MenuScreen extends BaseScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         batch.setColor(1, 1, 1, alpha);
-        batch.draw(img, initVector.x, initVector.y);
+        batch.draw(img, initVector.x - imgWidth / 2, initVector.y - imgHeight / 2, imgWidth, imgHeight);
         batch.end();
         calculateAlpha();
-        if (Math.abs(destVector.x - initVector.x) > 0.5f || Math.abs(destVector.y - initVector.y) > 0.5f) {
-            initVector.add(moveVector);
+        if (touched) {
+            doMoveObject();
         }
         if (leftMove) {
             destVector.x = initVector.x - 1f;
             destVector.y = initVector.y;
             norMoveVector();
+            doMoveObject();
         }
         if (rightMove) {
             destVector.x = initVector.x + 1f;
             destVector.y = initVector.y;
             norMoveVector();
+            doMoveObject();
         }
         if (upMove) {
             destVector.x = initVector.x;
             destVector.y = initVector.y + 1f;
             norMoveVector();
+            doMoveObject();
         }
         if (downMove) {
             destVector.x = initVector.x;
             destVector.y = initVector.y - 1f;
             norMoveVector();
+            doMoveObject();
+        }
+    }
+
+    private void doMoveObject() {
+        tempVector.set(destVector);
+        if (tempVector.sub(initVector).len() > moveVector.len()) {
+            initVector.add(moveVector);
+        } else {
+            initVector.set(destVector);
+            touched = false;
         }
     }
 
@@ -89,22 +112,21 @@ public class MenuScreen extends BaseScreen {
 
     @Override
     public void dispose() {
-        batch.dispose();
         img.dispose();
+        square1.dispose();
         super.dispose();
     }
 
     @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        destVector.x = screenX - (img.getWidth() / 2);
-        destVector.y = (height - screenY) - (img.getHeight() / 2);
+    public boolean touchDown(Vector2 touch, int pointer) {
+        this.destVector = touch;
         norMoveVector();
-        return super.touchDown(screenX, screenY, pointer, button);
+        touched = true;
+        return false;
     }
 
     private void norMoveVector() {
-        moveVector = destVector.cpy().sub(initVector);
-        moveVector.nor();
+        moveVector.set(destVector.cpy().sub(initVector).nor().scl(0.01f));
     }
 
     @Override
