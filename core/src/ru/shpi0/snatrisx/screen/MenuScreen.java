@@ -13,10 +13,10 @@ import ru.shpi0.snatrisx.base.BaseScreen;
 public class MenuScreen extends BaseScreen {
 
     // Бегущий человечек :)
-    private static final int FRAME_COLS = 6;
-    private static final int FRAME_ROWS = 5;
-    private static final float HUMAN_SIZE = 0.1f;
-    private static final float HUMAN_WIDTH = (512f / 6f) / (512f / 5f);
+    private static final int FRAME_COLS = 6; // Размерность атласа
+    private static final int FRAME_ROWS = 5; // Размерность атласа
+    private static final float HUMAN_SIZE = 0.1f; // Размер человечка от размера экрана
+    private static final float HUMAN_WIDTH = (512f / 6f) / (512f / 5f); // Пропорция ширины человечка
     private Animation walkAnimation;
     private Texture walkSheet;
     private TextureRegion[] walkFrames;
@@ -24,15 +24,15 @@ public class MenuScreen extends BaseScreen {
     private float stateTime;
     private float humanWidth;
     private float humanHeight;
-    private float humanStepSize;
-    private float humanJumpHeight = 3f;
-    private Vector2 humanPosition = new Vector2();
-    private  Vector2 humanJumpVector = new Vector2(0, 0.1f);
-    private boolean isDirectionToRight = true;
-    private boolean isStopped = true;
-    private boolean gonnaToStop = false;
-    private boolean isJumping = false;
-    private boolean isJumpingUp = true;
+    private float humanStepSize; // Размер шага
+    private float humanJumpHeight; // Высота прыжка
+    private Vector2 humanPosition = new Vector2(); // Вектор текущей позиции человечка
+    private  Vector2 humanJumpVector = new Vector2(0, 0.1f); // Вектор направления прыжка
+    private boolean isDirectionToRight = true; // Указатель направления движения
+    private boolean isStopped = true; // Ключ остановлен ли человек
+    private boolean gonnaToStop = false; // Ключ намерения остановиться (для прыжка), имитация инерции
+    private boolean isJumping = false; // Ключ нахождения в прыжке
+    private boolean isJumpingUp = true; // Ключ для направления в прыжке (снижение)
 
     Texture img;
     private static final float IMG_WIDTH = 0.75f; // Ширина текстуры в процентах от ширины экрана
@@ -86,6 +86,7 @@ public class MenuScreen extends BaseScreen {
         humanPosition.x = worldBounds.getLeft();
         humanPosition.y = worldBounds.getBottom();
         humanStepSize = worldBounds.getWidth() * 0.003f;
+        humanJumpHeight = humanHeight * 0.6f;
     }
 
     @Override
@@ -258,8 +259,8 @@ public class MenuScreen extends BaseScreen {
                 rightMove = true;
                 break;
             case Input.Keys.A:
-                if (!isJumping) {
-                    if (isDirectionToRight) {
+                if (!isJumping) { // В прыжке нельзя поменять направление движения
+                    if (isDirectionToRight) { // Повернуть текстуру, если нужно
                         flipHuman();
                     }
                     isDirectionToRight = false;
@@ -268,8 +269,8 @@ public class MenuScreen extends BaseScreen {
                 }
                 break;
             case Input.Keys.D:
-                if (!isJumping) {
-                    if (!isDirectionToRight) {
+                if (!isJumping) { // В прыжке нельзя поменять направление движения
+                    if (!isDirectionToRight) { // Повернуть текстуру, если нужно
                         flipHuman();
                     }
                     isDirectionToRight = true;
@@ -278,7 +279,7 @@ public class MenuScreen extends BaseScreen {
                 }
                 break;
             case Input.Keys.W:
-                if (!isJumping) {
+                if (!isJumping) { // Прыгнуть, только если человечек находится не в прыжке
                     isJumping = true;
                 }
                 break;
