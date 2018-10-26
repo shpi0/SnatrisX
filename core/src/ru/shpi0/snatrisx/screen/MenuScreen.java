@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
@@ -25,7 +24,15 @@ public class MenuScreen extends BaseScreen {
     private float stateTime;
     private float humanWidth;
     private float humanHeight;
-    private float humanPosition;
+    private float humanStepSize;
+    private float humanJumpHeight = 3f;
+    private Vector2 humanPosition = new Vector2();
+    private  Vector2 humanJumpVector = new Vector2(0, 0.1f);
+    private boolean isDirectionToRight = true;
+    private boolean isStopped = true;
+    private boolean gonnaToStop = false;
+    private boolean isJumping = false;
+    private boolean isJumpingUp = true;
 
     Texture img;
     private static final float IMG_WIDTH = 0.75f; // Ширина текстуры в процентах от ширины экрана
@@ -57,7 +64,7 @@ public class MenuScreen extends BaseScreen {
         initVector.y = 0;
 
         walkSheet = new Texture(Gdx.files.internal("sprite-animation4.png"));
-        TextureRegion[][] tmp = TextureRegion.split(walkSheet, walkSheet.getWidth()/FRAME_COLS, walkSheet.getHeight()/FRAME_ROWS);
+        TextureRegion[][] tmp = TextureRegion.split(walkSheet, walkSheet.getWidth() / FRAME_COLS, walkSheet.getHeight() / FRAME_ROWS);
         walkFrames = new TextureRegion[FRAME_COLS * FRAME_ROWS];
         int index = 0;
         for (int i = 0; i < FRAME_ROWS; i++) {
@@ -67,9 +74,6 @@ public class MenuScreen extends BaseScreen {
         }
         walkAnimation = new Animation(0.025f, walkFrames);
         stateTime = 0f;
-
-
-
     }
 
     @Override
@@ -79,7 +83,9 @@ public class MenuScreen extends BaseScreen {
         imgHeight = (img.getHeight() / (float) img.getWidth()) * worldBounds.getWidth() * IMG_WIDTH;
         humanHeight = worldBounds.getWidth() * HUMAN_SIZE;
         humanWidth = humanHeight * HUMAN_WIDTH;
-        humanPosition = worldBounds.getLeft();
+        humanPosition.x = worldBounds.getLeft();
+        humanPosition.y = worldBounds.getBottom();
+        humanStepSize = worldBounds.getWidth() * 0.003f;
     }
 
     @Override
@@ -88,14 +94,44 @@ public class MenuScreen extends BaseScreen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stateTime += Gdx.graphics.getDeltaTime();
-        currentFrame = (TextureRegion) walkAnimation.getKeyFrame(stateTime, true);
+        if (isStopped) {
+            currentFrame = (TextureRegion) walkAnimation.getKeyFrame(0.025f * 5f);
+        } else {
+            if (gonnaToStop && !isJumping) {
+                isStopped = true;
+                gonnaToStop = false;
+            }
+            currentFrame = (TextureRegion) walkAnimation.getKeyFrame(stateTime, true);
+        }
+        if (!isStopped) {
+            humanPosition.x += (isDirectionToRight ? humanStepSize : -humanStepSize);
+            if (humanPosition.x > worldBounds.getRight()) {
+                humanPosition.x = worldBounds.getLeft() - humanWidth;
+            }
+            if (humanPosition.x < worldBounds.getLeft() - humanWidth) {
+                humanPosition.x = worldBounds.getRight();
+            }
+        }
+        if (isJumping) {
+            humanPosition.add(humanJumpVector);
+            if (isJumpingUp) {
+                if (Math.abs(humanPosition.y - worldBounds.getBottom()) > humanJumpHeight) {
+                    isJumpingUp = false;
+                    humanJumpVector.set(0, -0.1f);
+                }
+            } else {
+                if (Math.abs(humanPosition.y - worldBounds.getBottom()) < 0.1f) {
+                    humanPosition.y = worldBounds.getBottom();
+                    isJumpingUp = true;
+                    humanJumpVector.set(0, 0.1f);
+                    isJumping = false;
+                }
+            }
+
+        }
         batch.begin();
         batch.setColor(1, 1, 1, 1);
-        batch.draw(currentFrame, humanPosition, worldBounds.getBottom(), humanWidth, humanHeight);
-        humanPosition += worldBounds.getWidth() * 0.003f;
-        if (humanPosition > worldBounds.getRight()) {
-            humanPosition = worldBounds.getLeft() - humanWidth;
-        }
+        batch.draw(currentFrame, humanPosition.x, humanPosition.y, humanWidth, humanHeight);
         batch.setColor(1, 1, 1, alpha);
         batch.draw(img, initVector.x - imgWidth / 2, initVector.y - imgHeight / 2, imgWidth, imgHeight);
         batch.end();
@@ -126,6 +162,12 @@ public class MenuScreen extends BaseScreen {
             destVector.y = initVector.y - 1f;
             norMoveVector();
             doMoveObject();
+        }
+    }
+
+    private void flipHuman() {
+        for (Object o : walkAnimation.getKeyFrames()) {
+            ((TextureRegion) o).flip(true, false);
         }
     }
 
@@ -187,6 +229,15 @@ public class MenuScreen extends BaseScreen {
             case Input.Keys.RIGHT:
                 rightMove = false;
                 break;
+            case Input.Keys.A:
+                gonnaToStop = true;
+                break;
+            case Input.Keys.D:
+                gonnaToStop = true;
+                break;
+            case Input.Keys.W:
+
+                break;
         }
         return super.keyUp(keycode);
     }
@@ -205,6 +256,31 @@ public class MenuScreen extends BaseScreen {
                 break;
             case Input.Keys.RIGHT:
                 rightMove = true;
+                break;
+            case Input.Keys.A:
+                if (!isJumping) {
+                    if (isDirectionToRight) {
+                        flipHuman();
+                    }
+                    isDirectionToRight = false;
+                    isStopped = false;
+                    gonnaToStop = false;
+                }
+                break;
+            case Input.Keys.D:
+                if (!isJumping) {
+                    if (!isDirectionToRight) {
+                        flipHuman();
+                    }
+                    isDirectionToRight = true;
+                    isStopped = false;
+                    gonnaToStop = false;
+                }
+                break;
+            case Input.Keys.W:
+                if (!isJumping) {
+                    isJumping = true;
+                }
                 break;
         }
         return super.keyDown(keycode);
