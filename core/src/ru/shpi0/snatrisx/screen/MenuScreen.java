@@ -4,11 +4,28 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.shpi0.snatrisx.base.BaseScreen;
 
 public class MenuScreen extends BaseScreen {
+
+    // Бегущий человечек :)
+    private static final int FRAME_COLS = 6;
+    private static final int FRAME_ROWS = 5;
+    private static final float HUMAN_SIZE = 0.1f;
+    private static final float HUMAN_WIDTH = (512f / 6f) / (512f / 5f);
+    private Animation walkAnimation;
+    private Texture walkSheet;
+    private TextureRegion[] walkFrames;
+    private TextureRegion currentFrame;
+    private float stateTime;
+    private float humanWidth;
+    private float humanHeight;
+    private float humanPosition;
 
     Texture img;
     private static final float IMG_WIDTH = 0.75f; // Ширина текстуры в процентах от ширины экрана
@@ -38,6 +55,21 @@ public class MenuScreen extends BaseScreen {
         square1 = new Texture("square_blue.png");
         initVector.x = 0;
         initVector.y = 0;
+
+        walkSheet = new Texture(Gdx.files.internal("sprite-animation4.png"));
+        TextureRegion[][] tmp = TextureRegion.split(walkSheet, walkSheet.getWidth()/FRAME_COLS, walkSheet.getHeight()/FRAME_ROWS);
+        walkFrames = new TextureRegion[FRAME_COLS * FRAME_ROWS];
+        int index = 0;
+        for (int i = 0; i < FRAME_ROWS; i++) {
+            for (int j = 0; j < FRAME_COLS; j++) {
+                walkFrames[index++] = tmp[i][j];
+            }
+        }
+        walkAnimation = new Animation(0.025f, walkFrames);
+        stateTime = 0f;
+
+
+
     }
 
     @Override
@@ -45,6 +77,9 @@ public class MenuScreen extends BaseScreen {
         super.resize(width, height);
         imgWidth = worldBounds.getWidth() * IMG_WIDTH;
         imgHeight = (img.getHeight() / (float) img.getWidth()) * worldBounds.getWidth() * IMG_WIDTH;
+        humanHeight = worldBounds.getWidth() * HUMAN_SIZE;
+        humanWidth = humanHeight * HUMAN_WIDTH;
+        humanPosition = worldBounds.getLeft();
     }
 
     @Override
@@ -52,7 +87,15 @@ public class MenuScreen extends BaseScreen {
         super.render(delta);
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        stateTime += Gdx.graphics.getDeltaTime();
+        currentFrame = (TextureRegion) walkAnimation.getKeyFrame(stateTime, true);
         batch.begin();
+        batch.setColor(1, 1, 1, 1);
+        batch.draw(currentFrame, humanPosition, worldBounds.getBottom(), humanWidth, humanHeight);
+        humanPosition += worldBounds.getWidth() * 0.003f;
+        if (humanPosition > worldBounds.getRight()) {
+            humanPosition = worldBounds.getLeft() - humanWidth;
+        }
         batch.setColor(1, 1, 1, alpha);
         batch.draw(img, initVector.x - imgWidth / 2, initVector.y - imgHeight / 2, imgWidth, imgHeight);
         batch.end();
