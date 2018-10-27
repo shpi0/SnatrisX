@@ -1,5 +1,6 @@
 package ru.shpi0.snatrisx.base;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
@@ -13,7 +14,9 @@ import ru.shpi0.snatrisx.math.Rect;
 
 public class BaseScreen implements Screen, InputProcessor {
 
-    private static final float SCREEN_HEIGHT = 42f;
+    protected Game game;
+
+    private static final float SCREEN_HEIGHT = 1f;
 
     protected SpriteBatch batch;
 
@@ -25,6 +28,10 @@ public class BaseScreen implements Screen, InputProcessor {
     protected Matrix3 screenToWorld;
 
     private Vector2 touch;
+
+    public BaseScreen(Game game) {
+        this.game = game;
+    }
 
     @Override
     public boolean keyDown(int keycode) {
@@ -107,6 +114,11 @@ public class BaseScreen implements Screen, InputProcessor {
         MatrixUtils.calcTransitionMatrix(worldToGl, worldBounds, glBounds);
         batch.setProjectionMatrix(worldToGl);
         MatrixUtils.calcTransitionMatrix(screenToWorld, screenBounds, worldBounds);
+        resize(worldBounds);
+    }
+
+    public void resize(Rect worldBounds) {
+
     }
 
     @Override
