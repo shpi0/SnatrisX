@@ -2,6 +2,7 @@ package ru.shpi0.snatrisx.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -33,6 +34,8 @@ public class MenuScreen extends BaseScreen {
     private boolean gonnaToStop = false; // Ключ намерения остановиться (для прыжка), имитация инерции
     private boolean isJumping = false; // Ключ нахождения в прыжке
     private boolean isJumpingUp = true; // Ключ для направления в прыжке (снижение)
+
+    Music music = Gdx.audio.newMusic(Gdx.files.internal("m/mario.mp3"));
 
     Texture img;
     private static final float IMG_WIDTH = 0.75f; // Ширина текстуры в процентах от ширины экрана
@@ -87,6 +90,9 @@ public class MenuScreen extends BaseScreen {
         humanPosition.y = worldBounds.getBottom();
         humanStepSize = worldBounds.getWidth() * 0.003f;
         humanJumpHeight = humanHeight * 0.6f;
+        music.setVolume(0.3f);                 // устанавливает громкость на половину максимального объема
+        music.setLooping(true);                // повторное воспроизведение, пока не будет вызван music.stop()
+        music.play();
     }
 
     @Override
