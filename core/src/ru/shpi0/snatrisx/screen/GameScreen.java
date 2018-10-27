@@ -49,7 +49,7 @@ public class GameScreen extends BaseScreen {
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
         if (closeBtn.isMe(touch)) {
-            closeBtn.setHeightProportion(0.1f);
+            closeBtn.setScale(1.25f);
         }
         return super.touchDown(touch, pointer);
     }
@@ -59,6 +59,7 @@ public class GameScreen extends BaseScreen {
         if (closeBtn.isMe(touch)) {
             Gdx.app.exit();
         }
+        closeBtn.setScale(1f);
         return super.touchUp(touch, pointer);
     }
 }

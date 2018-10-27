@@ -106,16 +106,18 @@ public class MenuScreen extends BaseScreen {
         if (buttonStart.isMe(touch)) {
             game.setScreen(new GameScreen(game));
         }
+        buttonExit.setScale(1f);
+        buttonStart.setScale(1f);
         return super.touchUp(touch, pointer);
     }
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
         if (buttonExit.isMe(touch)) {
-            buttonExit.setHeightProportion(0.11f);
+            buttonExit.setScale(1.1f);
         }
         if (buttonStart.isMe(touch)) {
-            buttonStart.setHeightProportion(0.11f);
+            buttonStart.setScale(1.1f);
         }
         return super.touchDown(touch, pointer);
     }
