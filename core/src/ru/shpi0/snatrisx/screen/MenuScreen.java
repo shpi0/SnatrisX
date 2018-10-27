@@ -3,6 +3,7 @@ package ru.shpi0.snatrisx.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -36,6 +37,9 @@ public class MenuScreen extends BaseScreen {
     private boolean isJumpingUp = true; // Ключ для направления в прыжке (снижение)
 
     Music music = Gdx.audio.newMusic(Gdx.files.internal("m/mario.mp3"));
+    Sound soundSteps = Gdx.audio.newSound(Gdx.files.internal("m/steps.mp3"));
+    Sound soundJumpUp = Gdx.audio.newSound(Gdx.files.internal("m/jump_up.mp3"));
+    Sound soundJumpDown = Gdx.audio.newSound(Gdx.files.internal("m/jump_down.mp3"));
 
     Texture img;
     private static final float IMG_WIDTH = 0.75f; // Ширина текстуры в процентах от ширины экрана
@@ -90,7 +94,7 @@ public class MenuScreen extends BaseScreen {
         humanPosition.y = worldBounds.getBottom();
         humanStepSize = worldBounds.getWidth() * 0.003f;
         humanJumpHeight = humanHeight * 0.6f;
-        music.setVolume(0.3f);                 // устанавливает громкость на половину максимального объема
+        music.setVolume(0.15f);                 // устанавливает громкость на половину максимального объема
         music.setLooping(true);                // повторное воспроизведение, пока не будет вызван music.stop()
         music.play();
     }
@@ -128,6 +132,10 @@ public class MenuScreen extends BaseScreen {
                 }
             } else {
                 if (Math.abs(humanPosition.y - worldBounds.getBottom()) < 0.1f) {
+                    soundJumpDown.play(1.0f);
+                    if (!isStopped) {
+                        soundSteps.play();
+                    }
                     humanPosition.y = worldBounds.getBottom();
                     isJumpingUp = true;
                     humanJumpVector.set(0, 0.1f);
@@ -238,9 +246,11 @@ public class MenuScreen extends BaseScreen {
                 break;
             case Input.Keys.A:
                 gonnaToStop = true;
+                soundSteps.stop();
                 break;
             case Input.Keys.D:
                 gonnaToStop = true;
+                soundSteps.stop();
                 break;
             case Input.Keys.W:
 
@@ -272,6 +282,7 @@ public class MenuScreen extends BaseScreen {
                     isDirectionToRight = false;
                     isStopped = false;
                     gonnaToStop = false;
+                    soundSteps.play(1.0f);
                 }
                 break;
             case Input.Keys.D:
@@ -282,11 +293,14 @@ public class MenuScreen extends BaseScreen {
                     isDirectionToRight = true;
                     isStopped = false;
                     gonnaToStop = false;
+                    soundSteps.play(1.0f);
                 }
                 break;
             case Input.Keys.W:
                 if (!isJumping) { // Прыгнуть, только если человечек находится не в прыжке
                     isJumping = true;
+                    soundSteps.stop();
+                    soundJumpUp.play(1.0f);
                 }
                 break;
         }
