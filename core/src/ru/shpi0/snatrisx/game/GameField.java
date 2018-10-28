@@ -90,7 +90,27 @@ public class GameField {
                     }
                     break;
             }
+        } else {
+            switch (direction) {
+                case LEFT:
+                    disposeFigure();
+                    figure.moveLeft();
+                    putFigure();
+                    break;
+                case RIGHT:
+                    disposeFigure();
+                    figure.moveRight();
+                    putFigure();
+                    break;
+            }
         }
     }
 
+    public boolean isGameOver() {
+        return isGameOver;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        isGameOver = gameOver;
+    }
 }

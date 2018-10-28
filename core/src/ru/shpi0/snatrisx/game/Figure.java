@@ -15,6 +15,7 @@ public class Figure {
     private Direction direction;
     private BlockColor blockColor;
     private int initCoord;
+    private int nextX, nextY;
 
     public Figure() {
         this((int) (Rnd.nextFloat(1f, 9f)));
@@ -43,27 +44,84 @@ public class Figure {
         newFigure((int) (Rnd.nextFloat(1f, 9f)));
     }
 
+    private int minCoordX() {
+        int result = xCoords[0];
+        for (int i = 0; i < xCoords.length; i++) {
+            if (xCoords[i] < result) {
+                result = xCoords[i];
+            }
+        }
+        return result;
+    }
+
+    private int maxCoordX() {
+        int result = xCoords[0];
+        for (int i = 0; i < xCoords.length; i++) {
+            if (xCoords[i] > result) {
+                result = xCoords[i];
+            }
+        }
+        return result;
+    }
+
+    private int minCoordY() {
+        int result = yCoords[0];
+        for (int i = 0; i < yCoords.length; i++) {
+            if (yCoords[i] < result) {
+                result = yCoords[i];
+            }
+        }
+        return result;
+    }
+
+    private int maxCoordY() {
+        int result = yCoords[0];
+        for (int i = 0; i < yCoords.length; i++) {
+            if (yCoords[i] > result) {
+                result = yCoords[i];
+            }
+        }
+        return result;
+    }
+
     public void move() {
-        if (isSnake) {
-            yCoords[0] = yCoords[1];
-            xCoords[0] = xCoords[1];
-            yCoords[1] = yCoords[2];
-            xCoords[1] = xCoords[2];
-            yCoords[2] = yCoords[3];
-            xCoords[2] = xCoords[3];
+        if (isSnake && canMove) {
             switch (direction) {
                 case DOWN:
-                    yCoords[3]++;
+                    nextY = yCoords[3] + 1;
+                    nextX = xCoords[3];
                     break;
                 case UP:
-                    yCoords[3]--;
+                    nextY = yCoords[3] - 1;
+                    nextX = xCoords[3];
                     break;
                 case LEFT:
-                    xCoords[3]--;
+                    nextX = xCoords[3] - 1;
+                    nextY = yCoords[3];
                     break;
                 case RIGHT:
-                    xCoords[3]++;
+                    nextX = xCoords[3] + 1;
+                    nextY = yCoords[3];
                     break;
+            }
+            if (nextX >= 0 && nextY >= 0 && nextX < GameField.MATRIX_WIDTH && nextY < GameField.MATRIX_HEIGHT) {
+                if (GameField.getInstance().gameMatrix[nextY][nextX] == 99) {
+                    isSnake = false;
+                    direction = DOWN;
+                }
+            }
+            if (nextY < 0 || nextY >= GameField.MATRIX_HEIGHT || nextX < 0 || nextX >= GameField.MATRIX_WIDTH) {
+                canMove = false;
+                GameField.getInstance().setGameOver(true);
+            } else {
+                yCoords[0] = yCoords[1];
+                xCoords[0] = xCoords[1];
+                yCoords[1] = yCoords[2];
+                xCoords[1] = xCoords[2];
+                yCoords[2] = yCoords[3];
+                xCoords[2] = xCoords[3];
+                xCoords[3] = nextX;
+                yCoords[3] = nextY;
             }
         } else {
             if (canMove) {
@@ -76,17 +134,21 @@ public class Figure {
     }
 
     public void moveLeft() {
-        xCoords[0]--;
-        xCoords[1]--;
-        xCoords[2]--;
-        xCoords[3]--;
+        if (minCoordX() > 0) {
+            xCoords[0]--;
+            xCoords[1]--;
+            xCoords[2]--;
+            xCoords[3]--;
+        }
     }
 
     public void moveRight() {
-        xCoords[0]++;
-        xCoords[1]++;
-        xCoords[2]++;
-        xCoords[3]++;
+        if (maxCoordX() < GameField.MATRIX_WIDTH - 1) {
+            xCoords[0]++;
+            xCoords[1]++;
+            xCoords[2]++;
+            xCoords[3]++;
+        }
     }
 
     public boolean isSnake() {
