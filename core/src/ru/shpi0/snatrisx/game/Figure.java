@@ -1,5 +1,7 @@
 package ru.shpi0.snatrisx.game;
 
+import com.badlogic.gdx.math.Matrix4;
+
 import ru.shpi0.snatrisx.math.Rnd;
 
 import static ru.shpi0.snatrisx.game.Direction.DOWN;
@@ -10,8 +12,27 @@ public class Figure {
 
     private boolean isSnake;
     private boolean canMove;
+    private boolean canTurn;
+    private boolean canRotate;
+    private boolean isLeftColumnEmpty;
+    private boolean isTopRowEmpty;
+    private int[][] figureMatrix4 = new int[4][4];
+    private int[][] tmpFigureMatrix4 = new int[4][4];
+    private int[][] figureMatrix3 = new int[3][3];
+    private int[][] tmpFigureMatrix3 = new int[3][3];
+    private int[] rotatexCoords = new int[FIG_SIZE];
+    private int[] rotateyCoords = new int[FIG_SIZE];
+    private int[] tempArr;
+    private int topxCoord;
+    private int topyCoord;
+    private int temp;
+    private int maxxCoord;
+    private int maxyCoord;
+    int figureMaxLenght;
     protected int[] xCoords = new int[FIG_SIZE];
     protected int[] yCoords = new int[FIG_SIZE];
+    private int[] nextYCoords = new int[FIG_SIZE];
+    private int[] nextXCoords = new int[FIG_SIZE];
     private Direction direction;
     private BlockColor blockColor;
     private int initCoord;
@@ -34,10 +55,10 @@ public class Figure {
         for (int i = 0; i < xCoords.length; i++) {
             xCoords[i] = initCoord;
         }
-            yCoords[3] = -1;
-            yCoords[2] = -2;
-            yCoords[1] = -3;
-            yCoords[0] = -4;
+        yCoords[3] = -1;
+        yCoords[2] = -2;
+        yCoords[1] = -3;
+        yCoords[0] = -4;
     }
 
     public void newFigure() {
@@ -124,6 +145,16 @@ public class Figure {
                 yCoords[3] = nextY;
             }
         } else {
+            for (int i = 0; i < FIG_SIZE; i++) {
+                nextYCoords[i] = yCoords[i] + 1;
+                if (nextYCoords[i] >= GameField.MATRIX_HEIGHT) {
+                    canMove = false;
+                } else {
+                    if (GameField.getInstance().gameMatrix[nextYCoords[i]][xCoords[i]] != -1) {
+                        canMove = false;
+                    }
+                }
+            }
             if (canMove) {
                 yCoords[0]++;
                 yCoords[1]++;
@@ -133,21 +164,217 @@ public class Figure {
         }
     }
 
+    public void rotate() {
+        figureMaxLenght = Math.max(Math.abs(maxCoordX() - minCoordX()), Math.abs(maxCoordY() - minCoordY())) + 1;
+
+        if (!(figureMaxLenght == 4 || figureMaxLenght == 3)) {
+            return;
+        }
+
+        topxCoord = minCoordX();
+        topyCoord = minCoordY();
+        maxxCoord = maxCoordX();
+        maxyCoord = maxCoordY();
+
+        // Получаем координаты для матрицы 4х4 или 3х3
+        for (int i = 0; i < FIG_SIZE; i++) {
+            rotatexCoords[i] = Math.abs(xCoords[i] - maxxCoord);
+            rotateyCoords[i] = Math.abs(yCoords[i] - maxyCoord);
+        }
+
+        if (figureMaxLenght == 4) {
+
+            // Заполняем матрицу 4х4
+            for (int j = 0; j < figureMaxLenght; j++) {
+                for (int l = 0; l < figureMaxLenght; l++) {
+                    figureMatrix4[l][j] = -1;
+                    for (int i = 0; i < FIG_SIZE; i++) {
+                        if (rotatexCoords[i] == j && rotateyCoords[i] == l) {
+                            figureMatrix4[rotateyCoords[i]][rotatexCoords[i]] = getBlockColor().getValue();
+                        }
+                    }
+                }
+            }
+
+            // Переворачиваем матрицу 4х4 на 90 град
+            for (int i = 0; i < figureMaxLenght; i++) {
+                for (int j = 0; j < figureMaxLenght; j++) {
+                    tmpFigureMatrix4[j][figureMaxLenght - 1 - i] = figureMatrix4[i][j];
+                }
+            }
+
+            // Сдвигаем фигуру в левый верхний угол матрицы, чтобы не скакала по экрану
+            isLeftColumnEmpty = true;
+            while (isLeftColumnEmpty) {
+                for (int i = 0; i < figureMaxLenght; i++) {
+                    if (tmpFigureMatrix4[i][0] != -1) {
+                        isLeftColumnEmpty = false;
+                    }
+                }
+                if (isLeftColumnEmpty) {
+                    for (int i = 0; i < figureMaxLenght; i++) {
+                        for (int j = 0; j < figureMaxLenght; j++) {
+                            if (j == figureMaxLenght - 1) {
+                                tmpFigureMatrix4[i][j] = -1;
+                            } else {
+                                tmpFigureMatrix4[i][j] = tmpFigureMatrix4[i][j + 1];
+                            }
+                        }
+                    }
+                }
+            }
+            isTopRowEmpty = true;
+            while (isTopRowEmpty) {
+                for (int i = 0; i < figureMaxLenght; i++) {
+                    if (tmpFigureMatrix4[0][i] != -1) {
+                        isTopRowEmpty = false;
+                    }
+                }
+                if (isTopRowEmpty) {
+                    tempArr = tmpFigureMatrix4[0];
+                    tmpFigureMatrix4[0] = tmpFigureMatrix4[1];
+                    tmpFigureMatrix4[1] = tmpFigureMatrix4[2];
+                    tmpFigureMatrix4[2] = tmpFigureMatrix4[3];
+                    tmpFigureMatrix4[3] = tempArr;
+                }
+            }
+
+            // Проецируем координаты фигуры обратно из матрицы 4х4 в основную игровую матрицу
+            temp = 0;
+            for (int i = 0; i < figureMaxLenght; i++) {
+                for (int j = 0; j < figureMaxLenght; j++) {
+                    if (tmpFigureMatrix4[i][j] != -1) {
+                        nextXCoords[temp] = j + topxCoord;
+                        nextYCoords[temp] = i + topyCoord;
+                        temp++;
+                    }
+                }
+            }
+
+        }
+
+        if (figureMaxLenght == 3) {
+
+            // Заполняем матрицу 3х3
+            for (int j = 0; j < figureMaxLenght; j++) {
+                for (int l = 0; l < figureMaxLenght; l++) {
+                    figureMatrix3[l][j] = -1;
+                    for (int i = 0; i < FIG_SIZE; i++) {
+                        if (rotatexCoords[i] == j && rotateyCoords[i] == l) {
+                            figureMatrix3[rotateyCoords[i]][rotatexCoords[i]] = getBlockColor().getValue();
+                        }
+                    }
+                }
+            }
+
+            // Переворачиваем матрицу 3х3 на 90 град
+            for (int i = 0; i < figureMaxLenght; i++) {
+                for (int j = 0; j < figureMaxLenght; j++) {
+                    tmpFigureMatrix3[j][figureMaxLenght - 1 - i] = figureMatrix3[i][j];
+                }
+            }
+
+            // Сдвигаем фигуру в левый верхний угол матрицы, чтобы не скакала по экрану
+            isLeftColumnEmpty = true;
+            for (int i = 0; i < figureMaxLenght; i++) {
+                if (tmpFigureMatrix3[i][0] != -1) {
+                    isLeftColumnEmpty = false;
+                }
+            }
+            if (isLeftColumnEmpty) {
+                for (int i = 0; i < figureMaxLenght; i++) {
+                    for (int j = 0; j < figureMaxLenght; j++) {
+                        if (j == figureMaxLenght - 1) {
+                            tmpFigureMatrix3[i][j] = -1;
+                        } else {
+                            tmpFigureMatrix3[i][j] = tmpFigureMatrix3[i][j + 1];
+                        }
+                    }
+                }
+            }
+            isTopRowEmpty = true;
+            for (int i = 0; i < figureMaxLenght; i++) {
+                if (tmpFigureMatrix3[0][i] != -1) {
+                    isTopRowEmpty = false;
+                }
+            }
+            if (isTopRowEmpty) {
+                tempArr = tmpFigureMatrix3[0];
+                tmpFigureMatrix3[0] = tmpFigureMatrix3[1];
+                tmpFigureMatrix3[1] = tmpFigureMatrix3[2];
+                tmpFigureMatrix3[2] = tempArr;
+            }
+
+            // Проецируем координаты фигуры обратно из матрицы 3х3 в основную игровую матрицу
+            temp = 0;
+            for (int i = 0; i < figureMaxLenght; i++) {
+                for (int j = 0; j < figureMaxLenght; j++) {
+                    if (tmpFigureMatrix3[i][j] != -1) {
+                        nextXCoords[temp] = j + topxCoord;
+                        nextYCoords[temp] = i + topyCoord;
+                        temp++;
+                    }
+                }
+            }
+
+        }
+
+        // Проверяем, возможно ли перевернуть фигуру по новым координатам
+        canRotate = true;
+        for (int i = 0; i < FIG_SIZE; i++) {
+            if (nextYCoords[i] > 0 &&
+                    nextYCoords[i] < GameField.MATRIX_HEIGHT &&
+                    nextXCoords[i] > 0 &&
+                    nextXCoords[i] < GameField.MATRIX_WIDTH) {
+                if (GameField.getInstance().gameMatrix[nextYCoords[i]][nextXCoords[i]] != -1) {
+                    canRotate = false;
+                }
+            } else {
+                canRotate = false;
+            }
+        }
+
+        // Если возможно, делаем переворот фигуры
+        if (canRotate) {
+            for (int i = 0; i < FIG_SIZE; i++) {
+                xCoords[i] = nextXCoords[i];
+                yCoords[i] = nextYCoords[i];
+            }
+        }
+
+    }
+
     public void moveLeft() {
         if (minCoordX() > 0) {
-            xCoords[0]--;
-            xCoords[1]--;
-            xCoords[2]--;
-            xCoords[3]--;
+            for (int i = 0; i < FIG_SIZE; i++) {
+                nextXCoords[i] = xCoords[i] - 1;
+            }
         }
+        tryTurnLeftOrRight();
     }
 
     public void moveRight() {
         if (maxCoordX() < GameField.MATRIX_WIDTH - 1) {
-            xCoords[0]++;
-            xCoords[1]++;
-            xCoords[2]++;
-            xCoords[3]++;
+            if (minCoordX() > 0) {
+                for (int i = 0; i < FIG_SIZE; i++) {
+                    nextXCoords[i] = xCoords[i] + 1;
+                }
+            }
+            tryTurnLeftOrRight();
+        }
+    }
+
+    private void tryTurnLeftOrRight() {
+        canTurn = true;
+        for (int i = 0; i < FIG_SIZE; i++) {
+            if (GameField.getInstance().gameMatrix[yCoords[i]][nextXCoords[i]] != -1) {
+                canTurn = false;
+            }
+        }
+        if (canTurn) {
+            for (int i = 0; i < FIG_SIZE; i++) {
+                xCoords[i] = nextXCoords[i];
+            }
         }
     }
 

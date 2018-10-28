@@ -14,6 +14,7 @@ public class GameField {
      */
     private Figure figure = new Figure();
     private boolean isGameOver = false;
+    private float speedModificator = 1f;
 
     private static final GameField ourInstance = new GameField();
 
@@ -27,14 +28,22 @@ public class GameField {
     }
 
     public void update() {
-        disposeFigure();
-        figure.move();
-        putFigure();
+        if (!isGameOver) {
+            if (figure.isCanMove()) {
+                disposeFigure();
+            } else {
+                speedModificator = 1f;
+                generateNewFigure();
+                putTarget();
+            }
+            figure.move();
+            putFigure();
+        }
     }
 
     private void putTarget() {
-        int xPos = (int) (Rnd.nextFloat(0f,   1f) * 10);
-        int yPos = (int) (Rnd.nextFloat(0f, 0.4f) * 10);
+        int xPos = (int) (Rnd.nextFloat(0f, 1f) * 10);
+        int yPos = (int) (Rnd.nextFloat(3f, 4f));
         gameMatrix[yPos][xPos] = 99;
     }
 
@@ -102,12 +111,24 @@ public class GameField {
                     figure.moveRight();
                     putFigure();
                     break;
+                case DOWN:
+                    speedModificator = 0.1f;
+                    break;
+                case UP:
+                    disposeFigure();
+                    figure.rotate();
+                    putFigure();
+                    break;
             }
         }
     }
 
     public boolean isGameOver() {
         return isGameOver;
+    }
+
+    public float getSpeedModificator() {
+        return speedModificator;
     }
 
     public void setGameOver(boolean gameOver) {

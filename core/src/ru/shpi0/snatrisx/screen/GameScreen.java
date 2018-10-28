@@ -12,6 +12,7 @@ import ru.shpi0.snatrisx.base.BaseScreen;
 import ru.shpi0.snatrisx.game.Direction;
 import ru.shpi0.snatrisx.game.GameField;
 import ru.shpi0.snatrisx.math.Rect;
+import ru.shpi0.snatrisx.sprite.Background;
 import ru.shpi0.snatrisx.sprite.CloseBtn;
 import ru.shpi0.snatrisx.sprite.Square;
 import ru.shpi0.snatrisx.sprite.Target;
@@ -24,6 +25,9 @@ public class GameScreen extends BaseScreen {
     private Rect downBtnArea = new Rect();
     private Rect leftBtnArea = new Rect();
     private Rect rightBtnArea = new Rect();
+
+    private Texture backgroundTexture;
+    private Background bg;
 
     private CloseBtn closeBtn;
     private Texture closeBtnTexture;
@@ -44,6 +48,8 @@ public class GameScreen extends BaseScreen {
     @Override
     public void show() {
         super.show();
+        backgroundTexture = new Texture("bg.jpg");
+        bg = new Background(new TextureRegion(backgroundTexture));
         closeBtnTexture = new Texture("close.png");
         closeBtn = new CloseBtn(new TextureRegion(closeBtnTexture));
         targetTexture = new Texture("target.png");
@@ -64,6 +70,7 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public void resize(Rect worldBounds) {
+        bg.resize(worldBounds);
         closeBtn.resize(worldBounds);
         target.resize(worldBounds);
         for (int i = 0; i < squares.length; i++) {
@@ -89,8 +96,9 @@ public class GameScreen extends BaseScreen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
+        bg.draw(batch);
         stateTime += delta;
-        if (stateTime > speed) {
+        if (stateTime > speed * gameField.getSpeedModificator()) {
             stateTime = 0f;
             gameField.update();
         }
@@ -147,6 +155,7 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public void dispose() {
+        backgroundTexture.dispose();
         closeBtnTexture.dispose();
         targetTexture.dispose();
         squareAtlas.dispose();
