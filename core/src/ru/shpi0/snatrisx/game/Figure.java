@@ -6,22 +6,41 @@ import static ru.shpi0.snatrisx.game.Direction.DOWN;
 
 public class Figure {
 
-    private static final int FIG_SIZE = 4;
+    public static final int FIG_SIZE = 4;
 
     private boolean isSnake;
     private boolean canMove;
-    private int[] xCoords = new int[FIG_SIZE];
-    private int[] yCoords = new int[FIG_SIZE];
+    protected int[] xCoords = new int[FIG_SIZE];
+    protected int[] yCoords = new int[FIG_SIZE];
     private Direction direction;
     private BlockColor blockColor;
     private int initCoord;
 
+    public Figure() {
+        this((int) (Rnd.nextFloat(1f, 9f)));
+    }
+
     public Figure(int initCoord) {
+        newFigure(initCoord);
+    }
+
+    public void newFigure(int initCoord) {
         this.initCoord = initCoord;
         this.isSnake = true;
         this.canMove = true;
         this.direction = DOWN;
         this.blockColor = BlockColor.values()[(int) (Rnd.nextFloat(0f, 0.5f) * 10)];
+        for (int i = 0; i < xCoords.length; i++) {
+            xCoords[i] = initCoord;
+        }
+            yCoords[3] = -1;
+            yCoords[2] = -2;
+            yCoords[1] = -3;
+            yCoords[0] = -4;
+    }
+
+    public void newFigure() {
+        newFigure((int) (Rnd.nextFloat(1f, 9f)));
     }
 
     public void move() {
@@ -92,5 +111,9 @@ public class Figure {
 
     public BlockColor getBlockColor() {
         return blockColor;
+    }
+
+    public void setDirection(Direction direction) {
+        this.direction = direction;
     }
 }
