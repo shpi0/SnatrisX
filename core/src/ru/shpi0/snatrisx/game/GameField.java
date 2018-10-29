@@ -47,6 +47,14 @@ public class GameField {
         }
     }
 
+    public void newGame() {
+        score = 0;
+        fillGameMatrix();
+        isGameOver = false;
+        figure.newFigure();
+        putTarget();
+    }
+
     protected void addScore(long value) {
         score += value;
     }
@@ -86,8 +94,6 @@ public class GameField {
                     if (speed > 0.3f) {
                         speed -= newscore / 5000f;
                     }
-                    System.out.println(score);
-                    System.out.println(speed);
                 }
             }
         }

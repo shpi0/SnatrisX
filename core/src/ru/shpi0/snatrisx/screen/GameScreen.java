@@ -16,6 +16,7 @@ import ru.shpi0.snatrisx.game.GameField;
 import ru.shpi0.snatrisx.math.Rect;
 import ru.shpi0.snatrisx.sprite.Background;
 import ru.shpi0.snatrisx.sprite.CloseBtn;
+import ru.shpi0.snatrisx.sprite.Logo;
 import ru.shpi0.snatrisx.sprite.Square;
 import ru.shpi0.snatrisx.sprite.Target;
 
@@ -39,6 +40,9 @@ public class GameScreen extends BaseScreen {
     private Target target;
     private Texture targetTexture;
 
+    private Logo gameOver;
+    private Texture gameOverTexture;
+
     private Square[][] squares = new Square[6][GameField.MATRIX_WIDTH * GameField.MATRIX_HEIGHT];
     private Square[] blackSquares = new Square[GameField.MATRIX_WIDTH * GameField.MATRIX_HEIGHT];
     private TextureAtlas squareAtlas;
@@ -59,6 +63,8 @@ public class GameScreen extends BaseScreen {
         targetTexture = new Texture("target.png");
         target = new Target(new TextureRegion(targetTexture));
         squareAtlas = new TextureAtlas("square.atlas");
+        gameOverTexture = new Texture("gameover.png");
+        gameOver = new Logo(new TextureRegion(gameOverTexture));
         for (int i = 0; i < squares.length; i++) {
             for (int j = 0; j < squares[i].length; j++) {
                 squares[i][j] = new Square(new TextureRegion(squareAtlas.findRegion("square" + i)));
@@ -80,6 +86,8 @@ public class GameScreen extends BaseScreen {
         bg.resize(worldBounds);
         closeBtn.resize(worldBounds);
         target.resize(worldBounds);
+        gameOver.resize(worldBounds);
+        gameOver.setHeightProportion(0.5f);
         for (int i = 0; i < squares.length; i++) {
             for (int j = 0; j < squares[i].length; j++) {
                 squares[i][j].resize(worldBounds);
@@ -113,6 +121,9 @@ public class GameScreen extends BaseScreen {
         }
         closeBtn.draw(batch);
         drawGameField();
+        if (gameField.isGameOver()) {
+            gameOver.draw(batch);
+        }
         batch.end();
     }
 
@@ -153,6 +164,11 @@ public class GameScreen extends BaseScreen {
         if (rightBtnArea.isMe(touch)) {
             gameField.areaTouched(Direction.RIGHT);
         }
+        if (gameOver.isMe(touch)) {
+            if (gameField.isGameOver()) {
+                gameField.newGame();
+            }
+        }
         return super.touchDown(touch, pointer);
     }
 
@@ -171,6 +187,7 @@ public class GameScreen extends BaseScreen {
         closeBtnTexture.dispose();
         targetTexture.dispose();
         squareAtlas.dispose();
+        gameOverTexture.dispose();
         super.dispose();
     }
 }
