@@ -355,10 +355,8 @@ public class Figure {
 
     public void moveRight() {
         if (maxCoordX() < GameField.MATRIX_WIDTH - 1) {
-            if (minCoordX() > 0) {
-                for (int i = 0; i < FIG_SIZE; i++) {
-                    nextXCoords[i] = xCoords[i] + 1;
-                }
+            for (int i = 0; i < FIG_SIZE; i++) {
+                nextXCoords[i] = xCoords[i] + 1;
             }
             tryTurnLeftOrRight();
         }

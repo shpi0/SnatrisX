@@ -2,10 +2,12 @@ package ru.shpi0.snatrisx.screen;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.shpi0.snatrisx.base.BaseScreen;
@@ -21,6 +23,8 @@ public class GameScreen extends BaseScreen {
 
     private GameField gameField = GameField.getInstance();
 
+    private ShapeRenderer sr = new ShapeRenderer();
+
     private Rect upBtnArea = new Rect();
     private Rect downBtnArea = new Rect();
     private Rect leftBtnArea = new Rect();
@@ -35,7 +39,8 @@ public class GameScreen extends BaseScreen {
     private Target target;
     private Texture targetTexture;
 
-    private Square[][] squares = new Square[5][GameField.MATRIX_WIDTH * GameField.MATRIX_HEIGHT];
+    private Square[][] squares = new Square[6][GameField.MATRIX_WIDTH * GameField.MATRIX_HEIGHT];
+    private Square[] blackSquares = new Square[GameField.MATRIX_WIDTH * GameField.MATRIX_HEIGHT];
     private TextureAtlas squareAtlas;
 
     private float stateTime = 0f;
@@ -59,6 +64,9 @@ public class GameScreen extends BaseScreen {
             for (int j = 0; j < squares[i].length; j++) {
                 squares[i][j] = new Square(new TextureRegion(squareAtlas.findRegion("square" + i)));
             }
+        }
+        for (int i = 0; i < blackSquares.length; i++) {
+            blackSquares[i] = new Square(new TextureRegion(squareAtlas.findRegion("square6")));
         }
     }
 
@@ -90,6 +98,8 @@ public class GameScreen extends BaseScreen {
         rightBtnArea.pos.set(worldBounds.getRight(), 0f);
         rightBtnArea.setHeight(worldBounds.getHeight() * 0.5f);
         rightBtnArea.setWidth(worldBounds.getHeight() * 0.5f);
+        sr.setProjectionMatrix(worldToGl);
+        sr.setColor(Color.WHITE);
     }
 
     private void draw(float delta) {
@@ -110,6 +120,9 @@ public class GameScreen extends BaseScreen {
     private void drawGameField() {
         for (int i = 0; i < GameField.MATRIX_HEIGHT; i++) {
             for (int j = 0; j < GameField.MATRIX_WIDTH; j++) {
+                    blackSquares[i * 10 + j].pos.y = (worldBounds.getTop() - blackSquares[i + j].getHalfHeight()) - (i * blackSquares[i + j].getHeight());
+                    blackSquares[i * 10 + j].pos.x = (worldBounds.getLeft() + blackSquares[i + j].getHalfWidth()) + (j * blackSquares[i + j].getWidth()) + (worldBounds.getHalfWidth() - (blackSquares[i + j].getHalfWidth() * GameField.MATRIX_WIDTH));
+                    blackSquares[i * 10 + j].draw(batch);
                 if (gameField.gameMatrix[i][j] >= 0 && gameField.gameMatrix[i][j] <= 5) {
                     squares[gameField.gameMatrix[i][j]][i + j].pos.y = (worldBounds.getTop() - squares[gameField.gameMatrix[i][j]][i + j].getHalfHeight()) - (i * squares[gameField.gameMatrix[i][j]][i + j].getHeight());
                     squares[gameField.gameMatrix[i][j]][i + j].pos.x = (worldBounds.getLeft() + squares[gameField.gameMatrix[i][j]][i + j].getHalfWidth()) + (j * squares[gameField.gameMatrix[i][j]][i + j].getWidth()) + (worldBounds.getHalfWidth() - (squares[gameField.gameMatrix[i][j]][i + j].getHalfWidth() * GameField.MATRIX_WIDTH));

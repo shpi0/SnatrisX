@@ -38,6 +38,35 @@ public class GameField {
             }
             figure.move();
             putFigure();
+            if (!figure.isCanMove()) {
+                checkLinesOnField();
+            }
+        }
+    }
+
+    private void checkLinesOnField() {
+        boolean hasSomeFilledLines = true;
+        while (hasSomeFilledLines) {
+            hasSomeFilledLines = false;
+            for (int i = 0; i < MATRIX_HEIGHT; i++) {
+                boolean lineIsFilled = true;
+                for (int j = 0; j < MATRIX_WIDTH; j++) {
+                    if (gameMatrix[i][j] < 0 || gameMatrix[i][j] > 5) {
+                        lineIsFilled = false;
+                    }
+                }
+                if (lineIsFilled) {
+                    hasSomeFilledLines = true;
+                    for (int j = i; j > 0; j--) {
+                        for (int k = 0; k < MATRIX_WIDTH; k++) {
+                            gameMatrix[j][k] = gameMatrix[j - 1][k];
+                        }
+                    }
+                    for (int j = 0; j < MATRIX_WIDTH; j++) {
+                        gameMatrix[0][j] = -1;
+                    }
+                }
+            }
         }
     }
 
