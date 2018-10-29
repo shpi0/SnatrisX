@@ -106,7 +106,11 @@ public class MenuScreen extends BaseScreen {
         if (buttonStart.isMe(touch)) {
             game.setScreen(new GameScreen(game));
         }
+        if (buttonHowTo.isMe(touch)) {
+            game.setScreen(new AboutScreen(game));
+        }
         buttonExit.setScale(1f);
+        buttonHowTo.setScale(1f);
         buttonStart.setScale(1f);
         return super.touchUp(touch, pointer);
     }
@@ -118,6 +122,9 @@ public class MenuScreen extends BaseScreen {
         }
         if (buttonStart.isMe(touch)) {
             buttonStart.setScale(1.1f);
+        }
+        if (buttonHowTo.isMe(touch)) {
+            buttonHowTo.setScale(1.1f);
         }
         return super.touchDown(touch, pointer);
     }

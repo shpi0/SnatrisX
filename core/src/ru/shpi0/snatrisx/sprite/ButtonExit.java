@@ -14,7 +14,8 @@ public class ButtonExit extends Sprite {
 
     @Override
     public void resize(Rect worldBounds) {
-        pos.set(pos.x, pos.y - 0.18f);
+        pos.set(worldBounds.pos.x, worldBounds.pos.y - getHeight() * 3 - 0.02f);
+//        pos.set(pos.x, pos.y - 0.18f);
     }
 
 }
