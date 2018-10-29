@@ -129,6 +129,7 @@ public class Figure {
                 if (GameField.getInstance().gameMatrix[nextY][nextX] == 99) {
                     isSnake = false;
                     direction = DOWN;
+                    GameField.getInstance().addScore(10);
                 }
             }
             if (nextY < 0 || nextY >= GameField.MATRIX_HEIGHT || nextX < 0 || nextX >= GameField.MATRIX_WIDTH) {

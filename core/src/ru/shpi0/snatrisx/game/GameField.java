@@ -14,7 +14,10 @@ public class GameField {
      */
     private Figure figure = new Figure();
     private boolean isGameOver = false;
+    private long score = 0;
+    private int newscore;
     private float speedModificator = 1f;
+    private float speed = 1f;
 
     private static final GameField ourInstance = new GameField();
 
@@ -44,6 +47,10 @@ public class GameField {
         }
     }
 
+    protected void addScore(long value) {
+        score += value;
+    }
+
     private void checkLinesOnField() {
         boolean hasSomeFilledLines = true;
         while (hasSomeFilledLines) {
@@ -57,6 +64,11 @@ public class GameField {
                 }
                 if (lineIsFilled) {
                     hasSomeFilledLines = true;
+                    newscore = 0;
+                    for (int j = 0; j < MATRIX_WIDTH; j++) {
+                        newscore += gameMatrix[i][j];
+                    }
+                    addScore(newscore);
                     for (int j = i; j > 0; j--) {
                         for (int k = 0; k < MATRIX_WIDTH; k++) {
                             gameMatrix[j][k] = gameMatrix[j - 1][k];
@@ -65,6 +77,17 @@ public class GameField {
                     for (int j = 0; j < MATRIX_WIDTH; j++) {
                         gameMatrix[0][j] = -1;
                     }
+                    if (speed > 0.75f) {
+                        speed -= newscore / 1000f;
+                    } else
+                    if (speed > 0.5f) {
+                        speed -= newscore / 2500f;
+                    } else
+                    if (speed > 0.3f) {
+                        speed -= newscore / 5000f;
+                    }
+                    System.out.println(score);
+                    System.out.println(speed);
                 }
             }
         }
@@ -150,6 +173,10 @@ public class GameField {
                     break;
             }
         }
+    }
+
+    public float getSpeed() {
+        return speed;
     }
 
     public boolean isGameOver() {

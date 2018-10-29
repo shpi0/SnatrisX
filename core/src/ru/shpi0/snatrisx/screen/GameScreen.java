@@ -44,7 +44,6 @@ public class GameScreen extends BaseScreen {
     private TextureAtlas squareAtlas;
 
     private float stateTime = 0f;
-    private float speed = 1f;
 
     public GameScreen(Game game) {
         super(game);
@@ -108,7 +107,7 @@ public class GameScreen extends BaseScreen {
         batch.begin();
         bg.draw(batch);
         stateTime += delta;
-        if (stateTime > speed * gameField.getSpeedModificator()) {
+        if (stateTime > gameField.getSpeed() * gameField.getSpeedModificator()) {
             stateTime = 0f;
             gameField.update();
         }
