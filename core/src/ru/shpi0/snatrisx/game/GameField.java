@@ -2,16 +2,18 @@ package ru.shpi0.snatrisx.game;
 
 import ru.shpi0.snatrisx.math.Rnd;
 
+/**
+ * Game field has a matrix with int values:
+ * -1 value: square on game field is empty
+ * 0..5 values: coloured square on game field
+ * 99 value: snake target on game field
+ */
+
 public class GameField {
 
     public static final int MATRIX_WIDTH = 10;
     public static final int MATRIX_HEIGHT = 20;
     public int[][] gameMatrix = new int[MATRIX_HEIGHT][MATRIX_WIDTH];
-    /**
-     *  -1   - empty
-     *  0..5 - square
-     *  99   - target
-     */
     private Figure figure = new Figure();
     private boolean isGameOver = false;
     private long score = 0;
@@ -31,6 +33,9 @@ public class GameField {
 
     }
 
+    /**
+     * Update game field when figure is moving
+     */
     public void update() {
         if (!isGameOver) {
             if (figure.isCanMove()) {
@@ -51,6 +56,9 @@ public class GameField {
         }
     }
 
+    /**
+     * Restart the game
+     */
     public void newGame() {
         score = 0;
         fillGameMatrix();
@@ -58,10 +66,17 @@ public class GameField {
         figure.newFigure();
     }
 
+    /**
+     * Add game score
+     * @param value
+     */
     protected void addScore(long value) {
         score += value;
     }
 
+    /**
+     * Check the horizontal lines on game field, and if line is filled with squares - empty it
+     */
     private void checkLinesOnField() {
         boolean hasSomeFilledLines = true;
         while (hasSomeFilledLines) {
@@ -102,6 +117,9 @@ public class GameField {
         }
     }
 
+    /**
+     * Place the snake tarhet to game field
+     */
     private void putTarget() {
         int xPos = (int) (Rnd.nextFloat(0f, 1f) * 10);
         int yPos = (int) (Rnd.nextFloat(0f, 2f));
@@ -109,6 +127,9 @@ public class GameField {
         fieldHaveTarget = true;
     }
 
+    /**
+     * Remove figure from it's coordinates on game field
+     */
     private void disposeFigure() {
         for (int i = 0; i < Figure.FIG_SIZE; i++) {
             if (figure.yCoords[i] >= 0 && figure.yCoords[i] < MATRIX_HEIGHT && figure.xCoords[i] >= 0 && figure.xCoords[i] < MATRIX_WIDTH) {
@@ -117,6 +138,9 @@ public class GameField {
         }
     }
 
+    /**
+     * Put figure to it's coordinates on game field
+     */
     private void putFigure() {
         for (int i = 0; i < Figure.FIG_SIZE; i++) {
             if (figure.yCoords[i] >= 0 && figure.yCoords[i] < MATRIX_HEIGHT && figure.xCoords[i] >= 0 && figure.xCoords[i] < MATRIX_WIDTH) {
@@ -125,10 +149,16 @@ public class GameField {
         }
     }
 
+    /**
+     * Generates new figure
+     */
     private void generateNewFigure() {
         figure.newFigure();
     }
 
+    /**
+     * Fill empty game matrix
+     */
     private void fillGameMatrix() {
         for (int i = 0; i < MATRIX_HEIGHT; i++) {
             for (int j = 0; j < MATRIX_WIDTH; j++) {
@@ -137,6 +167,10 @@ public class GameField {
         }
     }
 
+    /**
+     * Functionality for up, left, right and down areas on game screen
+     * @param direction
+     */
     public void areaTouched(Direction direction) {
         if (figure.isSnake()) {
             switch (direction) {
