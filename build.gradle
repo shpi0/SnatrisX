@@ -61,7 +61,6 @@ project(":android") {
 
     dependencies {
         implementation project(":core")
-        //implementation 'org.jetbrains.trove4j:trove4j:20160824'
         implementation "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"

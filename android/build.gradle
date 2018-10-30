@@ -38,11 +38,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-/*    buildTypes {
-        release {
-            signingConfig signingConfigs.release
-        }
-    }*/
 }
 
 

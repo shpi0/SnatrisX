@@ -17,8 +17,10 @@ import ru.shpi0.snatrisx.math.Rect;
 import ru.shpi0.snatrisx.sprite.Background;
 import ru.shpi0.snatrisx.sprite.CloseBtn;
 import ru.shpi0.snatrisx.sprite.Logo;
+import ru.shpi0.snatrisx.sprite.MusicButton;
 import ru.shpi0.snatrisx.sprite.PauseBtn;
 import ru.shpi0.snatrisx.sprite.ResumeBtn;
+import ru.shpi0.snatrisx.sprite.SoundButton;
 import ru.shpi0.snatrisx.sprite.Square;
 import ru.shpi0.snatrisx.sprite.Target;
 
@@ -39,6 +41,10 @@ public class GameScreen extends BaseScreen {
     private CloseBtn closeBtn;
     private PauseBtn pauseBtn;
     private ResumeBtn resumeBtn;
+    private SoundButton soundOnButton;
+    private SoundButton soundOffButton;
+    private MusicButton musicOnButton;
+    private MusicButton musicOffButton;
     private TextureAtlas buttonsAtlas;
 
     private Target target;
@@ -53,6 +59,7 @@ public class GameScreen extends BaseScreen {
     private Square[][] squares = new Square[6][GameField.MATRIX_WIDTH * GameField.MATRIX_HEIGHT];
     private Square[] blackSquares = new Square[GameField.MATRIX_WIDTH * GameField.MATRIX_HEIGHT];
     private TextureAtlas squareAtlas;
+
 
     private float stateTime = 0f;
 
@@ -69,6 +76,10 @@ public class GameScreen extends BaseScreen {
         closeBtn = new CloseBtn(new TextureRegion(buttonsAtlas.findRegion("close")));
         pauseBtn = new PauseBtn(new TextureRegion(buttonsAtlas.findRegion("pause")));
         resumeBtn = new ResumeBtn(new TextureRegion(buttonsAtlas.findRegion("resume")));
+        soundOnButton = new SoundButton(new TextureRegion(buttonsAtlas.findRegion("soundson")));
+        soundOffButton = new SoundButton(new TextureRegion(buttonsAtlas.findRegion("soundsoff")));
+        musicOnButton = new MusicButton(new TextureRegion(buttonsAtlas.findRegion("musicon")));
+        musicOffButton = new MusicButton(new TextureRegion(buttonsAtlas.findRegion("musicoff")));
         pauseTexture = new Texture("pauseMsg.png");
         pauseMsg = new Logo(new TextureRegion(pauseTexture));
         targetTexture = new Texture("target.png");
@@ -98,6 +109,10 @@ public class GameScreen extends BaseScreen {
         closeBtn.resize(worldBounds);
         pauseBtn.resize(worldBounds);
         resumeBtn.resize(worldBounds);
+        soundOnButton.resize(worldBounds);
+        soundOffButton.resize(worldBounds);
+        musicOnButton.resize(worldBounds);
+        musicOffButton.resize(worldBounds);
         target.resize(worldBounds);
         gameOver.resize(worldBounds);
         gameOver.setHeightProportion(0.5f);
@@ -150,6 +165,16 @@ public class GameScreen extends BaseScreen {
         if (gameField.isPaused()) {
             pauseMsg.draw(batch);
         }
+        if (isMusicEnabled) {
+            musicOnButton.draw(batch);
+        } else {
+            musicOffButton.draw(batch);
+        }
+        if (gameField.isSoundsEnabled()) {
+            soundOnButton.draw(batch);
+        } else {
+            soundOffButton.draw(batch);
+        }
         batch.end();
     }
 
@@ -180,7 +205,7 @@ public class GameScreen extends BaseScreen {
         if (closeBtn.isMe(touch)) {
             closeBtn.setScale(1.25f);
         }
-        if (upBtnArea.isMe(touch) && !closeBtn.isMe(touch) && !resumeBtn.isMe(touch)) {
+        if (upBtnArea.isMe(touch) && !closeBtn.isMe(touch) && !resumeBtn.isMe(touch) && !soundOnButton.isMe(touch) && !musicOnButton.isMe(touch)) {
             gameField.areaTouched(Direction.UP);
         }
         if (downBtnArea.isMe(touch)) {
@@ -198,10 +223,19 @@ public class GameScreen extends BaseScreen {
             }
         }
         if (resumeBtn.isMe(touch)) {
-            if (gameField.isPaused()) {
-                gameField.setPaused(false);
+            gameField.setPaused(!gameField.isPaused());
+        }
+        if (soundOnButton.isMe(touch)) {
+            gameField.setSoundsEnabled(!gameField.isSoundsEnabled());
+        }
+        if (musicOnButton.isMe(touch)) {
+            isMusicAlreadyPlaying = false;
+            if (isMusicEnabled) {
+                super.musicStop();
+                isMusicEnabled = false;
             } else {
-                gameField.setPaused(true);
+                super.musicPlay();
+                isMusicEnabled = true;
             }
         }
         return super.touchDown(touch, pointer);
@@ -218,6 +252,7 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public void dispose() {
+        gameField.dispose();
         font.dispose();
         pauseTexture.dispose();
         backgroundTexture.dispose();

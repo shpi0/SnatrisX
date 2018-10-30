@@ -51,6 +51,7 @@ public class Figure {
 
     /**
      * Re-init figure parameters on game start or game restart
+     *
      * @param initCoord
      */
     public void newFigure(int initCoord) {
@@ -86,6 +87,7 @@ public class Figure {
 
     /**
      * Get minimum X (left side) coordinate of figure
+     *
      * @return
      */
     private int minCoordX() {
@@ -100,6 +102,7 @@ public class Figure {
 
     /**
      * Get maximum X (right side) coordinate of figure
+     *
      * @return
      */
     private int maxCoordX() {
@@ -114,6 +117,7 @@ public class Figure {
 
     /**
      * Get minimum Y (top side) coordinate of figure
+     *
      * @return
      */
     private int minCoordY() {
@@ -128,6 +132,7 @@ public class Figure {
 
     /**
      * Get maximum Y (bottom side) coordinate of figure
+     *
      * @return
      */
     private int maxCoordY() {
@@ -169,6 +174,7 @@ public class Figure {
                     GameField.getInstance().setGameOver(true);
                 }
                 if (GameField.getInstance().gameMatrix[nextY][nextX] == 99) {
+                    GameField.getInstance().playEatSound();
                     isSnake = false;
                     direction = DOWN;
                     GameField.getInstance().addScore(10);
@@ -192,18 +198,16 @@ public class Figure {
                 nextYCoords[i] = yCoords[i] + 1;
                 if (nextYCoords[i] >= GameField.MATRIX_HEIGHT) {
                     canMove = false;
+                    GameField.getInstance().playPutSound();
                 } else {
                     try {
                         if (GameField.getInstance().gameMatrix[nextYCoords[i]][xCoords[i]] != -1) {
                             canMove = false;
+                            GameField.getInstance().playPutSound();
                         }
                     } catch (ArrayIndexOutOfBoundsException e) {
-                        if (!isSnake && canMove) {
-                            System.out.println("111");
-                        } else {
-                            if (!isSnake && !canMove) {
-                                GameField.getInstance().setGameOver(true);
-                            }
+                        if (!isSnake && !canMove) {
+                            GameField.getInstance().setGameOver(true);
                         }
                     }
                 }
@@ -445,6 +449,7 @@ public class Figure {
 
     /**
      * Is figure in snake or tetris game mode
+     *
      * @return
      */
     public boolean isSnake() {
@@ -453,6 +458,7 @@ public class Figure {
 
     /**
      * Is figure can moving
+     *
      * @return
      */
     public boolean isCanMove() {

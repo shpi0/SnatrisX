@@ -1,5 +1,8 @@
 package ru.shpi0.snatrisx.game;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
+
 import ru.shpi0.snatrisx.math.Rnd;
 
 /**
@@ -10,6 +13,10 @@ import ru.shpi0.snatrisx.math.Rnd;
  */
 
 public class GameField {
+
+    private Sound soundCrash = Gdx.audio.newSound(Gdx.files.internal("sounds/crash.mp3"));
+    private Sound soundEat = Gdx.audio.newSound(Gdx.files.internal("sounds/eat.mp3"));
+    private Sound soundPut = Gdx.audio.newSound(Gdx.files.internal("sounds/put.mp3"));
 
     public static final int MATRIX_WIDTH = 10;
     public static final int MATRIX_HEIGHT = 20;
@@ -22,6 +29,7 @@ public class GameField {
     private float speed = 1f;
     private boolean fieldHaveTarget;
     private boolean isPaused = false;
+    private boolean isSoundsEnabled = true;
 
     private static final GameField ourInstance = new GameField();
 
@@ -65,6 +73,7 @@ public class GameField {
         fillGameMatrix();
         isGameOver = false;
         figure.newFigure();
+        fieldHaveTarget = false;
     }
 
     /**
@@ -237,6 +246,7 @@ public class GameField {
     }
 
     public void setGameOver(boolean gameOver) {
+        playCrashSound();
         isGameOver = gameOver;
     }
 
@@ -246,5 +256,37 @@ public class GameField {
 
     public void setPaused(boolean paused) {
         isPaused = paused;
+    }
+
+    public boolean isSoundsEnabled() {
+        return isSoundsEnabled;
+    }
+
+    public void setSoundsEnabled(boolean soundsEnabled) {
+        isSoundsEnabled = soundsEnabled;
+    }
+
+    protected void playEatSound() {
+        if (isSoundsEnabled) {
+            soundEat.play(1.0f);
+        }
+    }
+
+    protected void playPutSound() {
+        if (isSoundsEnabled) {
+            soundPut.play(1.0f);
+        }
+    }
+
+    protected void playCrashSound() {
+        if (isSoundsEnabled) {
+            soundCrash.play(1.0f);
+        }
+    }
+
+    public void dispose() {
+        soundPut.dispose();
+        soundEat.dispose();
+        soundCrash.dispose();
     }
 }
