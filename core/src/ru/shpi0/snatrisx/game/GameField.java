@@ -21,6 +21,7 @@ public class GameField {
     private float speedModificator = 1f;
     private float speed = 1f;
     private boolean fieldHaveTarget;
+    private boolean isPaused = false;
 
     private static final GameField ourInstance = new GameField();
 
@@ -37,7 +38,7 @@ public class GameField {
      * Update game field when figure is moving
      */
     public void update() {
-        if (!isGameOver) {
+        if (!isGameOver && !isPaused) {
             if (figure.isCanMove()) {
                 disposeFigure();
             } else {
@@ -237,5 +238,13 @@ public class GameField {
 
     public void setGameOver(boolean gameOver) {
         isGameOver = gameOver;
+    }
+
+    public boolean isPaused() {
+        return isPaused;
+    }
+
+    public void setPaused(boolean paused) {
+        isPaused = paused;
     }
 }

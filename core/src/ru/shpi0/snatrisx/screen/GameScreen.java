@@ -17,6 +17,8 @@ import ru.shpi0.snatrisx.math.Rect;
 import ru.shpi0.snatrisx.sprite.Background;
 import ru.shpi0.snatrisx.sprite.CloseBtn;
 import ru.shpi0.snatrisx.sprite.Logo;
+import ru.shpi0.snatrisx.sprite.PauseBtn;
+import ru.shpi0.snatrisx.sprite.ResumeBtn;
 import ru.shpi0.snatrisx.sprite.Square;
 import ru.shpi0.snatrisx.sprite.Target;
 
@@ -35,13 +37,18 @@ public class GameScreen extends BaseScreen {
     private Background bg;
 
     private CloseBtn closeBtn;
-    private Texture closeBtnTexture;
+    private PauseBtn pauseBtn;
+    private ResumeBtn resumeBtn;
+    private TextureAtlas buttonsAtlas;
 
     private Target target;
     private Texture targetTexture;
 
     private Logo gameOver;
     private Texture gameOverTexture;
+
+    private Logo pauseMsg;
+    private Texture pauseTexture;
 
     private Square[][] squares = new Square[6][GameField.MATRIX_WIDTH * GameField.MATRIX_HEIGHT];
     private Square[] blackSquares = new Square[GameField.MATRIX_WIDTH * GameField.MATRIX_HEIGHT];
@@ -58,8 +65,12 @@ public class GameScreen extends BaseScreen {
         super.show();
         backgroundTexture = new Texture("bg.jpg");
         bg = new Background(new TextureRegion(backgroundTexture));
-        closeBtnTexture = new Texture("close.png");
-        closeBtn = new CloseBtn(new TextureRegion(closeBtnTexture));
+        buttonsAtlas = new TextureAtlas("gamebtns.atlas");
+        closeBtn = new CloseBtn(new TextureRegion(buttonsAtlas.findRegion("close")));
+        pauseBtn = new PauseBtn(new TextureRegion(buttonsAtlas.findRegion("pause")));
+        resumeBtn = new ResumeBtn(new TextureRegion(buttonsAtlas.findRegion("resume")));
+        pauseTexture = new Texture("pauseMsg.png");
+        pauseMsg = new Logo(new TextureRegion(pauseTexture));
         targetTexture = new Texture("target.png");
         target = new Target(new TextureRegion(targetTexture));
         squareAtlas = new TextureAtlas("square.atlas");
@@ -85,9 +96,13 @@ public class GameScreen extends BaseScreen {
     public void resize(Rect worldBounds) {
         bg.resize(worldBounds);
         closeBtn.resize(worldBounds);
+        pauseBtn.resize(worldBounds);
+        resumeBtn.resize(worldBounds);
         target.resize(worldBounds);
         gameOver.resize(worldBounds);
         gameOver.setHeightProportion(0.5f);
+        pauseMsg.resize(worldBounds);
+        pauseMsg.setWidthProportion(0.75f);
         for (int i = 0; i < squares.length; i++) {
             for (int j = 0; j < squares[i].length; j++) {
                 squares[i][j].resize(worldBounds);
@@ -118,6 +133,11 @@ public class GameScreen extends BaseScreen {
             gameField.update();
         }
         closeBtn.draw(batch);
+        if (gameField.isPaused()) {
+            resumeBtn.draw(batch);
+        } else {
+            pauseBtn.draw(batch);
+        }
         drawGameField();
         //FIXME
         font.setColor(Color.WHITE);
@@ -126,6 +146,9 @@ public class GameScreen extends BaseScreen {
 
         if (gameField.isGameOver()) {
             gameOver.draw(batch);
+        }
+        if (gameField.isPaused()) {
+            pauseMsg.draw(batch);
         }
         batch.end();
     }
@@ -157,7 +180,7 @@ public class GameScreen extends BaseScreen {
         if (closeBtn.isMe(touch)) {
             closeBtn.setScale(1.25f);
         }
-        if (upBtnArea.isMe(touch) && !closeBtn.isMe(touch)) {
+        if (upBtnArea.isMe(touch) && !closeBtn.isMe(touch) && !resumeBtn.isMe(touch)) {
             gameField.areaTouched(Direction.UP);
         }
         if (downBtnArea.isMe(touch)) {
@@ -172,6 +195,13 @@ public class GameScreen extends BaseScreen {
         if (gameOver.isMe(touch)) {
             if (gameField.isGameOver()) {
                 gameField.newGame();
+            }
+        }
+        if (resumeBtn.isMe(touch)) {
+            if (gameField.isPaused()) {
+                gameField.setPaused(false);
+            } else {
+                gameField.setPaused(true);
             }
         }
         return super.touchDown(touch, pointer);
@@ -189,8 +219,9 @@ public class GameScreen extends BaseScreen {
     @Override
     public void dispose() {
         font.dispose();
+        pauseTexture.dispose();
         backgroundTexture.dispose();
-        closeBtnTexture.dispose();
+        buttonsAtlas.dispose();
         targetTexture.dispose();
         squareAtlas.dispose();
         gameOverTexture.dispose();
