@@ -27,7 +27,6 @@ public class GameField {
     private int newscore;
     private float speedModificator = 1f;
     private float speed = 1f;
-    private boolean fieldHaveTarget;
     private boolean isPaused = false;
     private boolean isSoundsEnabled = true;
 
@@ -52,9 +51,8 @@ public class GameField {
             } else {
                 speedModificator = 1f;
                 generateNewFigure();
-                fieldHaveTarget = false;
             }
-            if (figure.isSnake() && figure.isFigureOut() && !fieldHaveTarget) {
+            if (figure.isSnake() && figure.isFigureOut() && !hasFieldTarget()) {
                 putTarget();
             }
             figure.move();
@@ -65,6 +63,17 @@ public class GameField {
         }
     }
 
+    private boolean hasFieldTarget() {
+        for (int i = 0; i < MATRIX_HEIGHT; i++) {
+            for (int j = 0; j < MATRIX_WIDTH; j++) {
+                if (gameMatrix[i][j] == 99) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Restart the game
      */
@@ -73,11 +82,11 @@ public class GameField {
         fillGameMatrix();
         isGameOver = false;
         figure.newFigure();
-        fieldHaveTarget = false;
     }
 
     /**
      * Add game score
+     *
      * @param value
      */
     protected void addScore(long value) {
@@ -115,11 +124,9 @@ public class GameField {
                     }
                     if (speed > 0.75f) {
                         speed -= newscore / 1000f;
-                    } else
-                    if (speed > 0.5f) {
+                    } else if (speed > 0.5f) {
                         speed -= newscore / 2500f;
-                    } else
-                    if (speed > 0.3f) {
+                    } else if (speed > 0.3f) {
                         speed -= newscore / 5000f;
                     }
                 }
@@ -128,13 +135,13 @@ public class GameField {
     }
 
     /**
-     * Place the snake tarhet to game field
+     * Place the snake target to game field
      */
     private void putTarget() {
-        int xPos = (int) (Rnd.nextFloat(0f, 1f) * 10);
-        int yPos = (int) (Rnd.nextFloat(0f, 2f));
+        int xPos = (int) (Rnd.nextFloat(0f, 9f));
+        int yPos = (int) (Rnd.nextFloat(0f, 4f));
+        System.out.println(gameMatrix[yPos][xPos]);
         gameMatrix[yPos][xPos] = 99;
-        fieldHaveTarget = true;
     }
 
     /**
@@ -179,6 +186,7 @@ public class GameField {
 
     /**
      * Functionality for up, left, right and down areas on game screen
+     *
      * @param direction
      */
     public void areaTouched(Direction direction) {
