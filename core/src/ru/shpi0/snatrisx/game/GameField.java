@@ -18,6 +18,7 @@ public class GameField {
     private int newscore;
     private float speedModificator = 1f;
     private float speed = 1f;
+    private boolean fieldHaveTarget;
 
     private static final GameField ourInstance = new GameField();
 
@@ -27,7 +28,7 @@ public class GameField {
 
     private GameField() {
         fillGameMatrix();
-        putTarget();
+
     }
 
     public void update() {
@@ -37,6 +38,9 @@ public class GameField {
             } else {
                 speedModificator = 1f;
                 generateNewFigure();
+                fieldHaveTarget = false;
+            }
+            if (figure.isSnake() && figure.isFigureOut() && !fieldHaveTarget) {
                 putTarget();
             }
             figure.move();
@@ -52,7 +56,6 @@ public class GameField {
         fillGameMatrix();
         isGameOver = false;
         figure.newFigure();
-        putTarget();
     }
 
     protected void addScore(long value) {
@@ -101,8 +104,9 @@ public class GameField {
 
     private void putTarget() {
         int xPos = (int) (Rnd.nextFloat(0f, 1f) * 10);
-        int yPos = (int) (Rnd.nextFloat(3f, 4f));
+        int yPos = (int) (Rnd.nextFloat(0f, 2f));
         gameMatrix[yPos][xPos] = 99;
+        fieldHaveTarget = true;
     }
 
     private void disposeFigure() {

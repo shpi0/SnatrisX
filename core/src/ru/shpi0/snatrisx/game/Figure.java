@@ -58,7 +58,7 @@ public class Figure {
         this.isSnake = true;
         this.canMove = true;
         this.direction = DOWN;
-        this.blockColor = BlockColor.values()[(int) (Rnd.nextFloat(0f, 0.5f) * 10)];
+        this.blockColor = BlockColor.values()[(int) (Rnd.nextFloat(1f, 6f))];
         for (int i = 0; i < xCoords.length; i++) {
             xCoords[i] = initCoord;
         }
@@ -73,6 +73,15 @@ public class Figure {
      */
     public void newFigure() {
         newFigure((int) (Rnd.nextFloat(1f, 9f)));
+    }
+
+    protected boolean isFigureOut() {
+        for (int i = 0; i < FIG_SIZE; i++) {
+            if (yCoords[i] < 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -155,6 +164,10 @@ public class Figure {
                     break;
             }
             if (nextX >= 0 && nextY >= 0 && nextX < GameField.MATRIX_WIDTH && nextY < GameField.MATRIX_HEIGHT) {
+                if (GameField.getInstance().gameMatrix[nextY][nextX] >= 0 && GameField.getInstance().gameMatrix[nextY][nextX] <= 5) {
+                    canMove = false;
+                    GameField.getInstance().setGameOver(true);
+                }
                 if (GameField.getInstance().gameMatrix[nextY][nextX] == 99) {
                     isSnake = false;
                     direction = DOWN;
@@ -180,8 +193,18 @@ public class Figure {
                 if (nextYCoords[i] >= GameField.MATRIX_HEIGHT) {
                     canMove = false;
                 } else {
-                    if (GameField.getInstance().gameMatrix[nextYCoords[i]][xCoords[i]] != -1) {
-                        canMove = false;
+                    try {
+                        if (GameField.getInstance().gameMatrix[nextYCoords[i]][xCoords[i]] != -1) {
+                            canMove = false;
+                        }
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        if (!isSnake && canMove) {
+                            System.out.println("111");
+                        } else {
+                            if (!isSnake && !canMove) {
+                                GameField.getInstance().setGameOver(true);
+                            }
+                        }
                     }
                 }
             }
@@ -405,15 +428,17 @@ public class Figure {
      * Check if figure can move and do it
      */
     private void tryTurnLeftOrRight() {
-        canTurn = true;
-        for (int i = 0; i < FIG_SIZE; i++) {
-            if (GameField.getInstance().gameMatrix[yCoords[i]][nextXCoords[i]] != -1) {
-                canTurn = false;
-            }
-        }
-        if (canTurn) {
+        if (isFigureOut()) {
+            canTurn = true;
             for (int i = 0; i < FIG_SIZE; i++) {
-                xCoords[i] = nextXCoords[i];
+                if (GameField.getInstance().gameMatrix[yCoords[i]][nextXCoords[i]] != -1) {
+                    canTurn = false;
+                }
+            }
+            if (canTurn) {
+                for (int i = 0; i < FIG_SIZE; i++) {
+                    xCoords[i] = nextXCoords[i];
+                }
             }
         }
     }

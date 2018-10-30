@@ -8,7 +8,7 @@ public class Square extends Sprite {
 
     public Square(TextureRegion region) {
         super(region);
-        setHeightProportion(0.048f);
+        setHeightProportion(0.045f);
     }
 
 }
