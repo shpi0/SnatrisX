@@ -43,6 +43,12 @@ public class Sprite extends Rect {
         setHeight(width* aspect);
     }
 
+    public void checkAndSetWidth(Rect worldBounds) {
+        if (getWidth() > worldBounds.getWidth()) {
+            setWidthProportion(worldBounds.getWidth());
+        }
+    }
+
     public void update(float delta) {
 
     }
