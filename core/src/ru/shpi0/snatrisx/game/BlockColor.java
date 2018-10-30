@@ -1,5 +1,9 @@
 package ru.shpi0.snatrisx.game;
 
+/**
+ * Colors and indexes for colors of game figures
+ */
+
 public enum BlockColor {
     GREEN  (0),
     BLUE   (1),

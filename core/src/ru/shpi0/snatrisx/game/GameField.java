@@ -185,6 +185,10 @@ public class GameField {
         return speed;
     }
 
+    public long getScore() {
+        return score;
+    }
+
     public boolean isGameOver() {
         return isGameOver;
     }

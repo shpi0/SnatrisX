@@ -1,10 +1,12 @@
 package ru.shpi0.snatrisx.game;
 
-import com.badlogic.gdx.math.Matrix4;
-
 import ru.shpi0.snatrisx.math.Rnd;
 
 import static ru.shpi0.snatrisx.game.Direction.DOWN;
+
+/**
+ * Game figure class with figure moving logic
+ */
 
 public class Figure {
 
@@ -46,6 +48,11 @@ public class Figure {
         newFigure(initCoord);
     }
 
+
+    /**
+     * Re-init figure parameters on game start or game restart
+     * @param initCoord
+     */
     public void newFigure(int initCoord) {
         this.initCoord = initCoord;
         this.isSnake = true;
@@ -61,10 +68,17 @@ public class Figure {
         yCoords[0] = -4;
     }
 
+    /**
+     * Re-init figure with random coordinates
+     */
     public void newFigure() {
         newFigure((int) (Rnd.nextFloat(1f, 9f)));
     }
 
+    /**
+     * Get minimum X (left side) coordinate of figure
+     * @return
+     */
     private int minCoordX() {
         int result = xCoords[0];
         for (int i = 0; i < xCoords.length; i++) {
@@ -75,6 +89,10 @@ public class Figure {
         return result;
     }
 
+    /**
+     * Get maximum X (right side) coordinate of figure
+     * @return
+     */
     private int maxCoordX() {
         int result = xCoords[0];
         for (int i = 0; i < xCoords.length; i++) {
@@ -85,6 +103,10 @@ public class Figure {
         return result;
     }
 
+    /**
+     * Get minimum Y (top side) coordinate of figure
+     * @return
+     */
     private int minCoordY() {
         int result = yCoords[0];
         for (int i = 0; i < yCoords.length; i++) {
@@ -95,6 +117,10 @@ public class Figure {
         return result;
     }
 
+    /**
+     * Get maximum Y (bottom side) coordinate of figure
+     * @return
+     */
     private int maxCoordY() {
         int result = yCoords[0];
         for (int i = 0; i < yCoords.length; i++) {
@@ -105,6 +131,9 @@ public class Figure {
         return result;
     }
 
+    /**
+     * Method moves a figure
+     */
     public void move() {
         if (isSnake && canMove) {
             switch (direction) {
@@ -165,6 +194,9 @@ public class Figure {
         }
     }
 
+    /**
+     * Method rotates a figure
+     */
     public void rotate() {
         figureMaxLenght = Math.max(Math.abs(maxCoordX() - minCoordX()), Math.abs(maxCoordY() - minCoordY())) + 1;
 
@@ -345,6 +377,9 @@ public class Figure {
 
     }
 
+    /**
+     * Move figure left on 1 square
+     */
     public void moveLeft() {
         if (minCoordX() > 0) {
             for (int i = 0; i < FIG_SIZE; i++) {
@@ -354,6 +389,9 @@ public class Figure {
         tryTurnLeftOrRight();
     }
 
+    /**
+     * Move figure right on 1 square
+     */
     public void moveRight() {
         if (maxCoordX() < GameField.MATRIX_WIDTH - 1) {
             for (int i = 0; i < FIG_SIZE; i++) {
@@ -363,6 +401,9 @@ public class Figure {
         }
     }
 
+    /**
+     * Check if figure can move and do it
+     */
     private void tryTurnLeftOrRight() {
         canTurn = true;
         for (int i = 0; i < FIG_SIZE; i++) {
@@ -377,10 +418,18 @@ public class Figure {
         }
     }
 
+    /**
+     * Is figure in snake or tetris game mode
+     * @return
+     */
     public boolean isSnake() {
         return isSnake;
     }
 
+    /**
+     * Is figure can moving
+     * @return
+     */
     public boolean isCanMove() {
         return canMove;
     }
