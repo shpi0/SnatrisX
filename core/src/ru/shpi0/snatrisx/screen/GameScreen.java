@@ -9,6 +9,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import ru.shpi0.snatrisx.base.BaseScreen;
 import ru.shpi0.snatrisx.game.Direction;
@@ -28,12 +32,15 @@ public class GameScreen extends BaseScreen {
 
     private GameField gameField = GameField.getInstance();
 
+    private Stage stage;
+    private Label.LabelStyle scoreLabelStyle = new Label.LabelStyle();
+    private BitmapFont font = new BitmapFont();
+    private Label scoreLabel;
+
     private Rect upBtnArea = new Rect();
     private Rect downBtnArea = new Rect();
     private Rect leftBtnArea = new Rect();
     private Rect rightBtnArea = new Rect();
-
-    private BitmapFont font = new BitmapFont();
 
     private Texture backgroundTexture;
     private Background bg;
@@ -95,12 +102,25 @@ public class GameScreen extends BaseScreen {
         for (int i = 0; i < blackSquares.length; i++) {
             blackSquares[i] = new Square(new TextureRegion(squareAtlas.findRegion("square6")));
         }
+        stage = new Stage(new ScreenViewport());
+        scoreLabelStyle.font = font;
+        scoreLabelStyle.fontColor = Color.WHITE;
+        scoreLabel = new Label("Score: 0", scoreLabelStyle);
+        int row_height = Gdx.graphics.getWidth() / 12;
+        scoreLabel.setSize(Gdx.graphics.getWidth(),row_height);
+//        scoreLabel.setPosition(0,Gdx.graphics.getHeight()-row_height*2);
+//        scoreLabel.setAlignment(Align.right);
+        scoreLabel.setPosition(0f,0f);
+        scoreLabel.setAlignment(Align.right);
+        stage.addActor(scoreLabel);
     }
 
     @Override
     public void render(float delta) {
         super.render(delta);
         draw(delta);
+        stage.act();
+        stage.draw();
     }
 
     @Override
@@ -146,6 +166,7 @@ public class GameScreen extends BaseScreen {
         if (stateTime > gameField.getSpeed() * gameField.getSpeedModificator()) {
             stateTime = 0f;
             gameField.update();
+            scoreLabel.setText("Score: " + gameField.getScore());
         }
         closeBtn.draw(batch);
         if (gameField.isPaused()) {
@@ -154,11 +175,6 @@ public class GameScreen extends BaseScreen {
             pauseBtn.draw(batch);
         }
         drawGameField();
-        //FIXME
-        font.setColor(Color.WHITE);
-        font.getData().setScale(0.01f);
-        font.draw(batch, "XXXXXXXXXXXXX", 0, 0);
-
         if (gameField.isGameOver()) {
             gameOver.draw(batch);
         }
@@ -253,6 +269,7 @@ public class GameScreen extends BaseScreen {
     @Override
     public void dispose() {
         gameField.dispose();
+        stage.dispose();
         font.dispose();
         pauseTexture.dispose();
         backgroundTexture.dispose();
