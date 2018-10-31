@@ -114,10 +114,10 @@ public class GameScreen extends BaseScreen {
         musicOnButton.resize(worldBounds);
         musicOffButton.resize(worldBounds);
         target.resize(worldBounds);
-        gameOver.resize(worldBounds);
         gameOver.setHeightProportion(0.5f);
-        pauseMsg.resize(worldBounds);
+        gameOver.resize(worldBounds);
         pauseMsg.setWidthProportion(0.75f);
+        pauseMsg.resize(worldBounds);
         for (int i = 0; i < squares.length; i++) {
             for (int j = 0; j < squares[i].length; j++) {
                 squares[i][j].resize(worldBounds);
