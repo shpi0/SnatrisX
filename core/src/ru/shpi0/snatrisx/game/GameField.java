@@ -100,20 +100,28 @@ public class GameField {
         boolean hasSomeFilledLines = true;
         while (hasSomeFilledLines) {
             hasSomeFilledLines = false;
-            for (int i = 0; i < MATRIX_HEIGHT; i++) {
+
+            // Проверяем игровое поле, каждую горизонтальную линию, начиная снизу
+            for (int i = MATRIX_HEIGHT - 1; i >= 0; i--) {
+
+                // Определяем, заполнена ли текущая линия
                 boolean lineIsFilled = true;
                 for (int j = 0; j < MATRIX_WIDTH; j++) {
                     if (gameMatrix[i][j] < 0 || gameMatrix[i][j] > 5) {
                         lineIsFilled = false;
                     }
                 }
+
+                // Если текущая линия заполнена, то:
                 if (lineIsFilled) {
                     hasSomeFilledLines = true;
+                    // 1. Добавляем пользователю очки за каждый квадратик в поле
                     newScore = 0;
                     for (int j = 0; j < MATRIX_WIDTH; j++) {
                         newScore += gameMatrix[i][j];
                     }
                     addScore(newScore);
+                    // 2. Опускаем все линии выше текущей на одну клетку вниз
                     for (int j = i; j > 0; j--) {
                         for (int k = 0; k < MATRIX_WIDTH; k++) {
                             gameMatrix[j][k] = gameMatrix[j - 1][k];
@@ -122,6 +130,7 @@ public class GameField {
                     for (int j = 0; j < MATRIX_WIDTH; j++) {
                         gameMatrix[0][j] = -1;
                     }
+                    // 3. Увеличиваем игровую скорость
                     if (speed > 0.75f) {
                         speed -= newScore / 1000f;
                     } else if (speed > 0.5f) {
