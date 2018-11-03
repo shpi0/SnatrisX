@@ -39,6 +39,7 @@ public class Figure {
     private BlockColor blockColor;
     private int initCoord;
     private int nextX, nextY;
+    private int numOfRotationTries = 0;
 
     public Figure() {
         this((int) (Rnd.nextFloat(1f, 9f)));
@@ -86,18 +87,54 @@ public class Figure {
     }
 
     /**
+     * Find minimum value in array
+     *
+     * @param coords
+     * @return
+     */
+    private int minCoords(int[] coords) {
+        int result = 0;
+        if (coords.length > 0) {
+            result = coords[0];
+            for (int i = 0; i < coords.length; i++) {
+                if (coords[i] < result) {
+                    result = coords[i];
+                }
+            }
+        } else {
+            throw new RuntimeException("Incorrect array length");
+        }
+        return result;
+    }
+
+    /**
+     * Find maximum value in array
+     *
+     * @param coords
+     * @return
+     */
+    private int maxCoords(int[] coords) {
+        int result = 0;
+        if (coords.length > 0) {
+            result = coords[0];
+            for (int i = 0; i < coords.length; i++) {
+                if (coords[i] > result) {
+                    result = coords[i];
+                }
+            }
+        } else {
+            throw new RuntimeException("Incorrect array length");
+        }
+        return result;
+    }
+
+    /**
      * Get minimum X (left side) coordinate of figure
      *
      * @return
      */
     private int minCoordX() {
-        int result = xCoords[0];
-        for (int i = 0; i < xCoords.length; i++) {
-            if (xCoords[i] < result) {
-                result = xCoords[i];
-            }
-        }
-        return result;
+        return minCoords(xCoords);
     }
 
     /**
@@ -106,13 +143,7 @@ public class Figure {
      * @return
      */
     private int maxCoordX() {
-        int result = xCoords[0];
-        for (int i = 0; i < xCoords.length; i++) {
-            if (xCoords[i] > result) {
-                result = xCoords[i];
-            }
-        }
-        return result;
+        return maxCoords(xCoords);
     }
 
     /**
@@ -121,13 +152,7 @@ public class Figure {
      * @return
      */
     private int minCoordY() {
-        int result = yCoords[0];
-        for (int i = 0; i < yCoords.length; i++) {
-            if (yCoords[i] < result) {
-                result = yCoords[i];
-            }
-        }
-        return result;
+        return minCoords(yCoords);
     }
 
     /**
@@ -136,13 +161,50 @@ public class Figure {
      * @return
      */
     private int maxCoordY() {
-        int result = yCoords[0];
-        for (int i = 0; i < yCoords.length; i++) {
-            if (yCoords[i] > result) {
-                result = yCoords[i];
+        return maxCoords(yCoords);
+    }
+
+    /**
+     * Check is figure can move left to 1 square
+     *
+     * @return
+     */
+    private boolean canFigureMoveLeft(int xCoord[], int yCoord[]) {
+        if (minCoords(xCoord) == 0) {
+            return false;
+        }
+        for (int i = 0; i < FIG_SIZE; i++) {
+            if (xCoord[i] < GameField.MATRIX_WIDTH) {
+                if (xCoord[i] == 0) {
+                    return false;
+                }
+                if (GameField.getInstance().gameMatrix[yCoord[i]][xCoord[i] - 1] != -1) {
+                    return false;
+                }
             }
         }
-        return result;
+        return true;
+    }
+
+
+    /**
+     * Check is figure can move right to 1 square
+     *
+     * @return
+     */
+    private boolean canFigureMoveRight(int xCoord[], int yCoord[]) {
+        if (maxCoords(xCoord) >= GameField.MATRIX_WIDTH - 1) {
+            return false;
+        }
+        for (int i = 0; i < FIG_SIZE; i++) {
+            if (xCoord[i] == GameField.MATRIX_WIDTH - 1) {
+                return false;
+            }
+            if (GameField.getInstance().gameMatrix[yCoord[i]][xCoord[i] + 1] != -1) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -380,17 +442,27 @@ public class Figure {
         }
 
         // Проверяем, возможно ли перевернуть фигуру по новым координатам
-        canRotate = true;
-        for (int i = 0; i < FIG_SIZE; i++) {
-            if (nextYCoords[i] > 0 &&
-                    nextYCoords[i] < GameField.MATRIX_HEIGHT &&
-                    nextXCoords[i] > 0 &&
-                    nextXCoords[i] < GameField.MATRIX_WIDTH) {
-                if (GameField.getInstance().gameMatrix[nextYCoords[i]][nextXCoords[i]] != -1) {
-                    canRotate = false;
+        canRotate = canRotateWithNewCoords(nextYCoords, nextXCoords);
+
+        // Если фигура находится у границы, пробуем ее сдвинуть и проверяем, можно ли ее повернуть
+        numOfRotationTries = 0;
+        if (!canRotate && minCoords(nextXCoords) <= 0 && canFigureMoveRight(nextXCoords, nextYCoords)) {
+            while (!canRotate && numOfRotationTries < 3) {
+                for (int i = 0; i < FIG_SIZE; i++) {
+                    nextXCoords[i]++;
                 }
-            } else {
-                canRotate = false;
+                numOfRotationTries++;
+                canRotate = canRotateWithNewCoords(nextYCoords, nextXCoords);
+            }
+        } else {
+            if (!canRotate && maxCoords(nextXCoords) > GameField.MATRIX_WIDTH - 1 && canFigureMoveLeft(nextXCoords, nextYCoords)) {
+                while (!canRotate && numOfRotationTries < 3) {
+                    for (int i = 0; i < FIG_SIZE; i++) {
+                        nextXCoords[i]--;
+                    }
+                    numOfRotationTries++;
+                    canRotate = canRotateWithNewCoords(nextYCoords, nextXCoords);
+                }
             }
         }
 
@@ -402,6 +474,23 @@ public class Figure {
             }
         }
 
+    }
+
+    private boolean canRotateWithNewCoords(int[] newYCoords, int[] newXCoords) {
+        boolean result = true;
+        for (int i = 0; i < FIG_SIZE; i++) {
+            if (newYCoords[i] > 0 &&
+                    newYCoords[i] < GameField.MATRIX_HEIGHT &&
+                    newXCoords[i] > 0 &&
+                    newXCoords[i] < GameField.MATRIX_WIDTH) {
+                if (GameField.getInstance().gameMatrix[newYCoords[i]][newXCoords[i]] != -1) {
+                    result = false;
+                }
+            } else {
+                result = false;
+            }
+        }
+        return result;
     }
 
     /**

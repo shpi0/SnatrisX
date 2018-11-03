@@ -24,7 +24,7 @@ public class GameField {
     private Figure figure = new Figure();
     private boolean isGameOver = false;
     private long score = 0;
-    private int newscore;
+    private int newScore;
     private float speedModificator = 1f;
     private float speed = 1f;
     private boolean isPaused = false;
@@ -109,11 +109,11 @@ public class GameField {
                 }
                 if (lineIsFilled) {
                     hasSomeFilledLines = true;
-                    newscore = 0;
+                    newScore = 0;
                     for (int j = 0; j < MATRIX_WIDTH; j++) {
-                        newscore += gameMatrix[i][j];
+                        newScore += gameMatrix[i][j];
                     }
-                    addScore(newscore);
+                    addScore(newScore);
                     for (int j = i; j > 0; j--) {
                         for (int k = 0; k < MATRIX_WIDTH; k++) {
                             gameMatrix[j][k] = gameMatrix[j - 1][k];
@@ -123,11 +123,11 @@ public class GameField {
                         gameMatrix[0][j] = -1;
                     }
                     if (speed > 0.75f) {
-                        speed -= newscore / 1000f;
+                        speed -= newScore / 1000f;
                     } else if (speed > 0.5f) {
-                        speed -= newscore / 2500f;
+                        speed -= newScore / 2500f;
                     } else if (speed > 0.3f) {
-                        speed -= newscore / 5000f;
+                        speed -= newScore / 5000f;
                     }
                 }
             }
@@ -140,7 +140,6 @@ public class GameField {
     private void putTarget() {
         int xPos = (int) (Rnd.nextFloat(0f, 9f));
         int yPos = (int) (Rnd.nextFloat(0f, 4f));
-        System.out.println(gameMatrix[yPos][xPos]);
         gameMatrix[yPos][xPos] = 99;
     }
 
