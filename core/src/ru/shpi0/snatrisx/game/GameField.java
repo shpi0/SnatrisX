@@ -183,7 +183,7 @@ public class GameField {
      * Remove figure from it's coordinates on game field
      */
     private void disposeFigure() {
-        for (int i = 0; i < Figure.FIG_SIZE; i++) {
+        for (int i = 0; i < Figure.MAX_FIG_SIZE; i++) {
             if (figure.yCoords[i] >= 0 && figure.yCoords[i] < MATRIX_HEIGHT && figure.xCoords[i] >= 0 && figure.xCoords[i] < MATRIX_WIDTH) {
                 gameMatrix[figure.yCoords[i]][figure.xCoords[i]] = -1;
             }
@@ -194,7 +194,7 @@ public class GameField {
      * Put figure to it's coordinates on game field
      */
     private void putFigure() {
-        for (int i = 0; i < Figure.FIG_SIZE; i++) {
+        for (int i = 0; i < Figure.MAX_FIG_SIZE; i++) {
             if (figure.yCoords[i] >= 0 && figure.yCoords[i] < MATRIX_HEIGHT && figure.xCoords[i] >= 0 && figure.xCoords[i] < MATRIX_WIDTH) {
                 gameMatrix[figure.yCoords[i]][figure.xCoords[i]] = figure.getBlockColor().getValue();
             }
