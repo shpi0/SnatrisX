@@ -1,6 +1,5 @@
 package ru.shpi0.snatrisx.screen;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -13,11 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.List;
 
 import ru.shpi0.snatrisx.SnatrisX;
 import ru.shpi0.snatrisx.base.BaseScreen;
@@ -172,7 +166,7 @@ public class GameScreen extends BaseScreen {
         batch.begin();
         bg.draw(batch);
         stateTime += delta;
-        if (stateTime > gameField.getSpeed() * gameField.getSpeedModificator()) {
+        if (stateTime > gameField.getSpeed() * gameField.getSpeedModificator() * gameField.getDifficultModificator()) {
             stateTime = 0f;
             gameField.update();
             scoreLabel.setText("Score: " + gameField.getScore());
@@ -290,7 +284,8 @@ public class GameScreen extends BaseScreen {
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
         if (closeBtn.isMe(touch)) {
-            Gdx.app.exit();
+            gameField.newGame();
+            game.setScreen(new MenuScreen(game));
         }
         closeBtn.setScale(1f);
         return super.touchUp(touch, pointer);

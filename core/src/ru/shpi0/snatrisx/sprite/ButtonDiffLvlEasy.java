@@ -5,9 +5,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ru.shpi0.snatrisx.base.Sprite;
 import ru.shpi0.snatrisx.math.Rect;
 
-public class ButtonStart extends Sprite {
+public class ButtonDiffLvlEasy extends Sprite {
 
-    public ButtonStart(TextureRegion region) {
+    public ButtonDiffLvlEasy(TextureRegion region) {
         super(region);
         setHeightProportion(0.1f);
     }

@@ -14,6 +14,5 @@ public class ButtonHowTo extends Sprite {
     @Override
     public void resize(Rect worldBounds) {
         pos.set(worldBounds.pos.x, worldBounds.pos.y - getHeight() * 2 - 0.02f);
-//        pos.set(pos.x, pos.y - 0.125f);
     }
 }

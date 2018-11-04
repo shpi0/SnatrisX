@@ -32,7 +32,7 @@ public class Figure {
     private int temp;
     private int maxxCoord;
     private int maxyCoord;
-    int figureMaxLenght;
+    int figureMaxLength;
     protected int[] xCoords = new int[MAX_FIG_SIZE];
     protected int[] yCoords = new int[MAX_FIG_SIZE];
     private int[] nextYCoords = new int[MAX_FIG_SIZE];
@@ -288,12 +288,12 @@ public class Figure {
      * Rotate figure using temporary matrix
      * @param matrix
      * @param tmpMatrix
-     * @param figLenght
+     * @param figLength
      */
-    private void rotate(int[][] matrix, int[][] tmpMatrix, int figLenght) {
+    private void rotate(int[][] matrix, int[][] tmpMatrix, int figLength) {
         // Заполняем матрицу
-        for (int j = 0; j < figLenght; j++) {
-            for (int l = 0; l < figLenght; l++) {
+        for (int j = 0; j < figLength; j++) {
+            for (int l = 0; l < figLength; l++) {
                 matrix[l][j] = -1;
                 for (int i = 0; i < MAX_FIG_SIZE; i++) {
                     if (rotatexCoords[i] == j && rotateyCoords[i] == l) {
@@ -304,24 +304,24 @@ public class Figure {
         }
 
         // Переворачиваем матрицу на 90 град
-        for (int i = 0; i < figLenght; i++) {
-            for (int j = 0; j < figLenght; j++) {
-                tmpMatrix[j][figLenght - 1 - i] = matrix[i][j];
+        for (int i = 0; i < figLength; i++) {
+            for (int j = 0; j < figLength; j++) {
+                tmpMatrix[j][figLength - 1 - i] = matrix[i][j];
             }
         }
 
         // Сдвигаем фигуру в левый верхний угол матрицы, чтобы не скакала по экрану
         isLeftColumnEmpty = true;
         while (isLeftColumnEmpty) {
-            for (int i = 0; i < figLenght; i++) {
+            for (int i = 0; i < figLength; i++) {
                 if (tmpMatrix[i][0] != -1) {
                     isLeftColumnEmpty = false;
                 }
             }
             if (isLeftColumnEmpty) {
-                for (int i = 0; i < figLenght; i++) {
-                    for (int j = 0; j < figLenght; j++) {
-                        if (j == figLenght - 1) {
+                for (int i = 0; i < figLength; i++) {
+                    for (int j = 0; j < figLength; j++) {
+                        if (j == figLength - 1) {
                             tmpMatrix[i][j] = -1;
                         } else {
                             tmpMatrix[i][j] = tmpMatrix[i][j + 1];
@@ -332,24 +332,24 @@ public class Figure {
         }
         isTopRowEmpty = true;
         while (isTopRowEmpty) {
-            for (int i = 0; i < figLenght; i++) {
+            for (int i = 0; i < figLength; i++) {
                 if (tmpMatrix[0][i] != -1) {
                     isTopRowEmpty = false;
                 }
             }
             if (isTopRowEmpty) {
                 tempArr = tmpMatrix[0];
-                for (int i = 0; i < figLenght - 1; i++) {
+                for (int i = 0; i < figLength - 1; i++) {
                     tmpMatrix[i] = tmpMatrix[i + 1];
                 }
-                tmpMatrix[figLenght - 1] = tempArr;
+                tmpMatrix[figLength - 1] = tempArr;
             }
         }
 
         // Проецируем координаты фигуры обратно из матрицы в основную игровую матрицу
         temp = 0;
-        for (int i = 0; i < figLenght; i++) {
-            for (int j = 0; j < figLenght; j++) {
+        for (int i = 0; i < figLength; i++) {
+            for (int j = 0; j < figLength; j++) {
                 if (tmpMatrix[i][j] != -1) {
                     nextXCoords[temp] = j + topxCoord;
                     nextYCoords[temp] = i + topyCoord;
@@ -363,9 +363,9 @@ public class Figure {
      * Method rotates a figure
      */
     public void rotate() {
-        figureMaxLenght = Math.max(Math.abs(maxCoordX() - minCoordX()), Math.abs(maxCoordY() - minCoordY())) + 1;
+        figureMaxLength = Math.max(Math.abs(maxCoordX() - minCoordX()), Math.abs(maxCoordY() - minCoordY())) + 1;
 
-        if (!(figureMaxLenght == 5 || figureMaxLenght == 4 || figureMaxLenght == 3 || canMove)) {
+        if (!(figureMaxLength == 5 || figureMaxLength == 4 || figureMaxLength == 3 || canMove)) {
             return;
         }
 
@@ -380,21 +380,21 @@ public class Figure {
             rotateyCoords[i] = Math.abs(yCoords[i] - maxyCoord);
         }
 
-        if (figureMaxLenght == 5) {
+        if (figureMaxLength == 5) {
 
-            rotate(figureMatrix5, tmpFigureMatrix5, figureMaxLenght);
-
-        }
-
-        if (figureMaxLenght == 4) {
-
-            rotate(figureMatrix4, tmpFigureMatrix4, figureMaxLenght);
+            rotate(figureMatrix5, tmpFigureMatrix5, figureMaxLength);
 
         }
 
-        if (figureMaxLenght == 3) {
+        if (figureMaxLength == 4) {
 
-            rotate(figureMatrix3, tmpFigureMatrix3, figureMaxLenght);
+            rotate(figureMatrix4, tmpFigureMatrix4, figureMaxLength);
+
+        }
+
+        if (figureMaxLength == 3) {
+
+            rotate(figureMatrix3, tmpFigureMatrix3, figureMaxLength);
 
         }
 

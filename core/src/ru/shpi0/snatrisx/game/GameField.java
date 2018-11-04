@@ -33,6 +33,7 @@ public class GameField {
     private int newScore;
     private float speedModificator = 1f;
     private float speed = 1f;
+    private float difficultModificator = 1f;
     private boolean isPaused = false;
     private boolean isSoundsEnabled = true;
 
@@ -286,6 +287,14 @@ public class GameField {
 
     public float getSpeedModificator() {
         return speedModificator;
+    }
+
+    public float getDifficultModificator() {
+        return difficultModificator;
+    }
+
+    public void setDifficultModificator(float difficultModificator) {
+        this.difficultModificator = difficultModificator;
     }
 
     public void setGameOver(boolean gameOver) {
