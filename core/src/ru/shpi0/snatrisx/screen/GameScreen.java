@@ -14,6 +14,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
+
 import ru.shpi0.snatrisx.base.BaseScreen;
 import ru.shpi0.snatrisx.game.Direction;
 import ru.shpi0.snatrisx.game.GameField;
@@ -67,6 +72,9 @@ public class GameScreen extends BaseScreen {
     private Square[] blackSquares = new Square[GameField.MATRIX_WIDTH * GameField.MATRIX_HEIGHT];
     private TextureAtlas squareAtlas;
 
+    private boolean destroyingAnimationProcess = false;
+    private Integer lineIdxToDestroy;
+    private int destroyLinesFrame = 0;
 
     private float stateTime = 0f;
 
@@ -203,6 +211,28 @@ public class GameScreen extends BaseScreen {
                     blackSquares[i * 10 + j].draw(batch);
                 }
                 if (gameField.gameMatrix[i][j] >= 0 && gameField.gameMatrix[i][j] <= 5) {
+                    if (!destroyingAnimationProcess) {
+                        lineIdxToDestroy = gameField.pickLineFromQueue();
+                        if (lineIdxToDestroy != null) {
+                            destroyingAnimationProcess = true;
+                        } else {
+                            gameField.setHasLinesToDrop(false);
+                        }
+                    } else {
+                        if (lineIdxToDestroy == i) {
+                            if (destroyLinesFrame > 20) {
+                                destroyingAnimationProcess = false;
+                                destroyLinesFrame = 0;
+                                gameField.dropLinesDown(lineIdxToDestroy);
+                                break;
+                            }
+                            squares[gameField.gameMatrix[i][j]][i * 10 + j].setScale(1f - ((destroyLinesFrame + 1) * 0.04f));
+                            destroyLinesFrame++;
+                        }
+                    }
+                    if (!destroyingAnimationProcess) {
+                        squares[gameField.gameMatrix[i][j]][i * 10 + j].setScale(1f);
+                    }
                     squares[gameField.gameMatrix[i][j]][i * 10 + j].pos.y = (worldBounds.getTop() - squares[gameField.gameMatrix[i][j]][i * 10 + j].getHalfHeight()) - (i * squares[gameField.gameMatrix[i][j]][i * 10 + j].getHeight());
                     squares[gameField.gameMatrix[i][j]][i * 10 + j].pos.x = (worldBounds.getLeft() + squares[gameField.gameMatrix[i][j]][i * 10 + j].getHalfWidth()) + (j * squares[gameField.gameMatrix[i][j]][i * 10 + j].getWidth()) + (worldBounds.getHalfWidth() - (squares[gameField.gameMatrix[i][j]][i * 10 + j].getHalfWidth() * GameField.MATRIX_WIDTH));
                     squares[gameField.gameMatrix[i][j]][i * 10 + j].draw(batch);

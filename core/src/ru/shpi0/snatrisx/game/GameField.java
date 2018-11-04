@@ -3,6 +3,9 @@ package ru.shpi0.snatrisx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 import ru.shpi0.snatrisx.math.Rnd;
 
 /**
@@ -13,6 +16,9 @@ import ru.shpi0.snatrisx.math.Rnd;
  */
 
 public class GameField {
+
+    private Deque<Integer> linesToDrop = new ArrayDeque<Integer>();
+    private boolean hasLinesToDrop = false;
 
     private Sound soundCrash = Gdx.audio.newSound(Gdx.files.internal("sounds/crash.mp3"));
     private Sound soundEat = Gdx.audio.newSound(Gdx.files.internal("sounds/eat.mp3"));
@@ -45,7 +51,7 @@ public class GameField {
      * Update game field when figure is moving
      */
     public void update() {
-        if (!isGameOver && !isPaused) {
+        if (!isGameOver && !isPaused && !hasLinesToDrop) {
             if (figure.isCanMove()) {
                 disposeFigure();
             } else {
@@ -97,10 +103,6 @@ public class GameField {
      * Check the horizontal lines on game field, and if line is filled with squares - empty it
      */
     private void checkLinesOnField() {
-        boolean hasSomeFilledLines = true;
-        while (hasSomeFilledLines) {
-            hasSomeFilledLines = false;
-
             // Проверяем игровое поле, каждую горизонтальную линию, начиная снизу
             for (int i = MATRIX_HEIGHT - 1; i >= 0; i--) {
 
@@ -114,23 +116,14 @@ public class GameField {
 
                 // Если текущая линия заполнена, то:
                 if (lineIsFilled) {
-                    hasSomeFilledLines = true;
                     // 1. Добавляем пользователю очки за каждый квадратик в поле
                     newScore = 0;
                     for (int j = 0; j < MATRIX_WIDTH; j++) {
                         newScore += gameMatrix[i][j];
                     }
                     addScore(newScore);
-                    // 2. Опускаем все линии выше текущей на одну клетку вниз
-                    for (int j = i; j > 0; j--) {
-                        for (int k = 0; k < MATRIX_WIDTH; k++) {
-                            gameMatrix[j][k] = gameMatrix[j - 1][k];
-                        }
-                    }
-                    for (int j = 0; j < MATRIX_WIDTH; j++) {
-                        gameMatrix[0][j] = -1;
-                    }
-                    // 3. Увеличиваем игровую скорость
+
+                    // 2. Увеличиваем игровую скорость
                     if (speed > 0.75f) {
                         speed -= newScore / 1000f;
                     } else if (speed > 0.5f) {
@@ -138,9 +131,43 @@ public class GameField {
                     } else if (speed > 0.3f) {
                         speed -= newScore / 5000f;
                     }
+
+                    // 3. Добавляем текущую линию в очередь на удаление и прерываем проверку
+                    putLineToQueue(i);
+                    hasLinesToDrop = true;
+                    break;
                 }
+                hasLinesToDrop = false;
+            }
+    }
+
+    /**
+     * Drop all lines to empty line and check field again
+     * @param line
+     */
+    public void dropLinesDown(int line) {
+        for (int j = line; j > 0; j--) {
+            for (int k = 0; k < MATRIX_WIDTH; k++) {
+                gameMatrix[j][k] = gameMatrix[j - 1][k];
             }
         }
+        for (int j = 0; j < MATRIX_WIDTH; j++) {
+            gameMatrix[0][j] = -1;
+        }
+        checkLinesOnField();
+    }
+
+    /**
+     * Put index of line which should be destroyed to queue
+     * @param lineIdx
+     */
+    public void putLineToQueue(int lineIdx) {
+        linesToDrop.offer(lineIdx);
+        hasLinesToDrop = true;
+    }
+
+    public Integer pickLineFromQueue() {
+        return linesToDrop.poll();
     }
 
     /**
@@ -304,5 +331,9 @@ public class GameField {
         soundPut.dispose();
         soundEat.dispose();
         soundCrash.dispose();
+    }
+
+    public void setHasLinesToDrop(boolean hasLinesToDrop) {
+        this.hasLinesToDrop = hasLinesToDrop;
     }
 }
