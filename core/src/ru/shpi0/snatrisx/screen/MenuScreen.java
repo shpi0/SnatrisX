@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
+import ru.shpi0.snatrisx.SnatrisX;
 import ru.shpi0.snatrisx.base.BaseScreen;
 import ru.shpi0.snatrisx.math.Rect;
 import ru.shpi0.snatrisx.sprite.Background;
@@ -15,6 +16,7 @@ import ru.shpi0.snatrisx.sprite.ButtonExit;
 import ru.shpi0.snatrisx.sprite.ButtonHowTo;
 import ru.shpi0.snatrisx.sprite.ButtonStart;
 import ru.shpi0.snatrisx.sprite.Logo;
+import ru.shpi0.snatrisx.sprite.MusicButton;
 
 public class MenuScreen extends BaseScreen {
 
@@ -29,16 +31,23 @@ public class MenuScreen extends BaseScreen {
     private ButtonExit buttonExit;
     private ButtonHowTo buttonHowTo;
 
+    private MusicButton musicOnButton;
+    private MusicButton musicOffButton;
+    private TextureAtlas miniButtonsAtlas;
+
     private float alpha = 0f; // Коэффициент прозрачности (альфа канал)
     private boolean growUp = true; // Ключ для мерцания, если true, то яркость увеличивается, иначе уменьшается
 
-    public MenuScreen(Game game) {
+    public MenuScreen(SnatrisX game) {
         super(game);
     }
 
     @Override
     public void show() {
         super.show();
+        miniButtonsAtlas = new TextureAtlas("gamebtns.atlas");
+        musicOnButton = new MusicButton(new TextureRegion(miniButtonsAtlas.findRegion("musicon")));
+        musicOffButton = new MusicButton(new TextureRegion(miniButtonsAtlas.findRegion("musicoff")));
         backgroundTexture = new Texture("bg.jpg");
         bg = new Background(new TextureRegion(backgroundTexture));
         logoTexture = new Texture("logo.png");
@@ -56,6 +65,8 @@ public class MenuScreen extends BaseScreen {
         buttonStart.resize(worldBounds);
         buttonHowTo.resize(worldBounds);
         buttonExit.resize(worldBounds);
+        musicOnButton.resize(worldBounds);
+        musicOffButton.resize(worldBounds);
     }
 
     @Override
@@ -73,6 +84,11 @@ public class MenuScreen extends BaseScreen {
         buttonStart.draw(batch);
         buttonHowTo.draw(batch);
         buttonExit.draw(batch);
+        if (game.isMusicEnabled()) {
+            musicOnButton.draw(batch);
+        } else {
+            musicOffButton.draw(batch);
+        }
         batch.end();
     }
 
@@ -92,6 +108,7 @@ public class MenuScreen extends BaseScreen {
 
     @Override
     public void dispose() {
+        miniButtonsAtlas.dispose();
         backgroundTexture.dispose();
         logoTexture.dispose();
         buttonsAtlas.dispose();
@@ -125,6 +142,15 @@ public class MenuScreen extends BaseScreen {
         }
         if (buttonHowTo.isMe(touch)) {
             buttonHowTo.setScale(1.1f);
+        }
+        if (musicOnButton.isMe(touch)) {
+            if (game.isMusicEnabled()) {
+                game.musicStop();
+                game.setMusicEnabled(false);
+            } else {
+                game.musicPlay();
+                game.setMusicEnabled(true);
+            }
         }
         return super.touchDown(touch, pointer);
     }

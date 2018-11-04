@@ -4,22 +4,18 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 
+import ru.shpi0.snatrisx.SnatrisX;
 import ru.shpi0.snatrisx.math.MatrixUtils;
 import ru.shpi0.snatrisx.math.Rect;
 
 public class BaseScreen implements Screen, InputProcessor {
 
-    protected Game game;
-
-    private Music music = Gdx.audio.newMusic(Gdx.files.internal("sounds/loop.mp3"));
-    protected boolean isMusicAlreadyPlaying = false;
-    protected boolean isMusicEnabled = true;
+    protected SnatrisX game;
 
     private static final float SCREEN_HEIGHT = 1f;
 
@@ -34,7 +30,7 @@ public class BaseScreen implements Screen, InputProcessor {
 
     private Vector2 touch;
 
-    public BaseScreen(Game game) {
+    public BaseScreen(SnatrisX game) {
         this.game = game;
     }
 
@@ -100,20 +96,10 @@ public class BaseScreen implements Screen, InputProcessor {
         this.worldToGl = new Matrix4();
         this.screenToWorld = new Matrix3();
         this.touch = new Vector2();
-        if (!isMusicAlreadyPlaying) {
-            music.setVolume(0.3f);
-            music.setLooping(true);
-            music.play();
-        }
+
     }
 
-    protected void musicStop() {
-        music.stop();
-    }
 
-    protected void musicPlay() {
-        music.play();
-    }
 
     @Override
     public void render(float delta) {
@@ -125,7 +111,6 @@ public class BaseScreen implements Screen, InputProcessor {
         screenBounds.setSize(width, height);
         screenBounds.setLeft(0);
         screenBounds.setBottom(0);
-
         float aspect = width / (float) height;
         worldBounds.setHeight(SCREEN_HEIGHT);
         worldBounds.setWidth(SCREEN_HEIGHT * aspect);
@@ -157,6 +142,5 @@ public class BaseScreen implements Screen, InputProcessor {
     @Override
     public void dispose() {
         batch.dispose();
-        music.dispose();
     }
 }

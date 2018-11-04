@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
+import ru.shpi0.snatrisx.SnatrisX;
 import ru.shpi0.snatrisx.base.BaseScreen;
 import ru.shpi0.snatrisx.game.Direction;
 import ru.shpi0.snatrisx.game.GameField;
@@ -78,7 +79,7 @@ public class GameScreen extends BaseScreen {
 
     private float stateTime = 0f;
 
-    public GameScreen(Game game) {
+    public GameScreen(SnatrisX game) {
         super(game);
     }
 
@@ -189,7 +190,7 @@ public class GameScreen extends BaseScreen {
         if (gameField.isPaused()) {
             pauseMsg.draw(batch);
         }
-        if (isMusicEnabled) {
+        if (game.isMusicEnabled()) {
             musicOnButton.draw(batch);
         } else {
             musicOffButton.draw(batch);
@@ -275,13 +276,12 @@ public class GameScreen extends BaseScreen {
             gameField.setSoundsEnabled(!gameField.isSoundsEnabled());
         }
         if (musicOnButton.isMe(touch)) {
-            isMusicAlreadyPlaying = false;
-            if (isMusicEnabled) {
-                super.musicStop();
-                isMusicEnabled = false;
+            if (game.isMusicEnabled()) {
+                game.musicStop();
+                game.setMusicEnabled(false);
             } else {
-                super.musicPlay();
-                isMusicEnabled = true;
+                game.musicPlay();
+                game.setMusicEnabled(true);
             }
         }
         return super.touchDown(touch, pointer);

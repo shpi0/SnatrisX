@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
+import ru.shpi0.snatrisx.SnatrisX;
 import ru.shpi0.snatrisx.base.BaseScreen;
 import ru.shpi0.snatrisx.math.Rect;
 import ru.shpi0.snatrisx.sprite.Background;
@@ -20,7 +21,7 @@ public class AboutScreen extends BaseScreen {
     private TextureAtlas bgAtlas = new TextureAtlas("about.atlas");
 
 
-    public AboutScreen(Game game) {
+    public AboutScreen(SnatrisX game) {
         super(game);
     }
 
