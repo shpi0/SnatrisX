@@ -23,6 +23,8 @@ import ru.shpi0.snatrisx.sprite.MusicButton;
 
 public class MenuScreen extends BaseScreen {
 
+    GameField gameField = GameField.getInstance();
+
     private Texture backgroundTexture;
     private Background bg;
 
@@ -149,15 +151,18 @@ public class MenuScreen extends BaseScreen {
         } else {
             if (buttonDiffLvlEasy.isMe(touch)) {
                 GameField.getInstance().setDifficultModificator(1f);
+                GameField.getInstance().setHardcoreLvl(false);
                 game.setScreen(new GameScreen(game));
             }
             if (buttonDiffLvlNormal.isMe(touch)) {
                 GameField.getInstance().setDifficultModificator(0.75f);
+                GameField.getInstance().setHardcoreLvl(false);
                 game.setScreen(new GameScreen(game));
             }
             if (buttonDiffLvlHard.isMe(touch)) {
                 GameField.getInstance().setDifficultModificator(0.65f);
                 game.setScreen(new GameScreen(game));
+                GameField.getInstance().setHardcoreLvl(true);
             }
         }
         buttonExit.setScale(1f);
@@ -184,15 +189,12 @@ public class MenuScreen extends BaseScreen {
         } else {
             if (buttonDiffLvlEasy.isMe(touch)) {
                 buttonDiffLvlEasy.setScale(1.1f);
-                GameField.getInstance().setHardcoreLvl(false);
             }
             if (buttonDiffLvlNormal.isMe(touch)) {
                 buttonDiffLvlNormal.setScale(1.1f);
-                GameField.getInstance().setHardcoreLvl(false);
             }
             if (buttonDiffLvlHard.isMe(touch)) {
                 buttonDiffLvlHard.setScale(1.1f);
-                GameField.getInstance().setHardcoreLvl(true);
             }
             if (!musicOnButton.isMe(touch) && !buttonDiffLvlEasy.isMe(touch) && !buttonDiffLvlNormal.isMe(touch) && !buttonDiffLvlHard.isMe(touch)) {
                 isChoosingDiffLvl = false;

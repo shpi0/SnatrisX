@@ -27,7 +27,7 @@ public class GameField {
     public static final int MATRIX_WIDTH = 10;
     public static final int MATRIX_HEIGHT = 20;
     public int[][] gameMatrix = new int[MATRIX_HEIGHT][MATRIX_WIDTH];
-    private Figure figure = new Figure();
+    private Figure figure;
     private boolean isGameOver = false;
     private long score = 0;
     private int newScore;
@@ -47,13 +47,15 @@ public class GameField {
 
     private GameField() {
         fillGameMatrix();
-
     }
 
     /**
      * Update game field when figure is moving
      */
     public void update() {
+        if (figure == null) {
+            newGame();
+        }
         if (!isGameOver && !isPaused && !hasLinesToDrop) {
             if (figure.isCanMove()) {
                 disposeFigure();
@@ -90,7 +92,11 @@ public class GameField {
         score = 0;
         fillGameMatrix();
         isGameOver = false;
-        figure.newFigure();
+        if (figure == null) {
+            figure = new Figure();
+        } else {
+            figure.newFigure();
+        }
     }
 
     /**
@@ -186,7 +192,7 @@ public class GameField {
      * Remove figure from it's coordinates on game field
      */
     private void disposeFigure() {
-        for (int i = 0; i < Figure.MAX_FIG_SIZE; i++) {
+        for (int i = 0; i < figure.getFigureSize(); i++) {
             if (figure.yCoords[i] >= 0 && figure.yCoords[i] < MATRIX_HEIGHT && figure.xCoords[i] >= 0 && figure.xCoords[i] < MATRIX_WIDTH) {
                 gameMatrix[figure.yCoords[i]][figure.xCoords[i]] = -1;
             }
@@ -197,7 +203,7 @@ public class GameField {
      * Put figure to it's coordinates on game field
      */
     private void putFigure() {
-        for (int i = 0; i < Figure.MAX_FIG_SIZE; i++) {
+        for (int i = 0; i < figure.getFigureSize(); i++) {
             if (figure.yCoords[i] >= 0 && figure.yCoords[i] < MATRIX_HEIGHT && figure.xCoords[i] >= 0 && figure.xCoords[i] < MATRIX_WIDTH) {
                 gameMatrix[figure.yCoords[i]][figure.xCoords[i]] = figure.getBlockColor().getValue();
             }

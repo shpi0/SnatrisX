@@ -2,13 +2,14 @@ package ru.shpi0.snatrisx.game;
 
 import ru.shpi0.snatrisx.math.Rnd;
 
-import static ru.shpi0.snatrisx.game.Direction.DOWN;
 
 /**
  * Game figure class with figure moving logic
  */
 
 public class Figure {
+
+    private GameField gameField;
 
     public static final int MIN_FIG_SIZE = 4;
     public static final int MAX_FIG_SIZE = 5;
@@ -21,14 +22,8 @@ public class Figure {
     private boolean canRotate;
     private boolean isLeftColumnEmpty;
     private boolean isTopRowEmpty;
-    private int[][] figureMatrix5 = new int[5][5];
-    private int[][] tmpFigureMatrix5 = new int[5][5];
-    private int[][] figureMatrix4 = new int[4][4];
-    private int[][] tmpFigureMatrix4 = new int[4][4];
-    private int[][] figureMatrix3 = new int[3][3];
-    private int[][] tmpFigureMatrix3 = new int[3][3];
-    private int[] rotatexCoords = new int[MAX_FIG_SIZE];
-    private int[] rotateyCoords = new int[MAX_FIG_SIZE];
+    private int[] rotatexCoords;
+    private int[] rotateyCoords;
     private int[] tempArr;
     private int topxCoord;
     private int topyCoord;
@@ -36,10 +31,10 @@ public class Figure {
     private int maxxCoord;
     private int maxyCoord;
     int figureMaxLength;
-    protected int[] xCoords = new int[MAX_FIG_SIZE];
-    protected int[] yCoords = new int[MAX_FIG_SIZE];
-    private int[] nextYCoords = new int[MAX_FIG_SIZE];
-    private int[] nextXCoords = new int[MAX_FIG_SIZE];
+    protected int[] xCoords;
+    protected int[] yCoords;
+    private int[] nextYCoords;
+    private int[] nextXCoords;
     private Direction direction;
     private BlockColor blockColor;
     private int initCoord;
@@ -51,6 +46,7 @@ public class Figure {
     }
 
     public Figure(int initCoord) {
+        this.gameField = GameField.getInstance();
         newFigure(initCoord);
     }
 
@@ -62,16 +58,22 @@ public class Figure {
      */
     public void newFigure(int initCoord) {
         this.initCoord = initCoord;
-        this.figureSize = GameField.getInstance().isHardcoreLvl() ? generateFigureLength() : 4;
+        this.figureSize = gameField.isHardcoreLvl() ? generateFigureLength() : 4;
+        this.rotatexCoords = new int[this.figureSize];
+        this.rotateyCoords = new int[this.figureSize];
+        this.xCoords = new int[this.figureSize];
+        this.yCoords = new int[this.figureSize];
+        this.nextYCoords = new int[this.figureSize];
+        this.nextXCoords = new int[this.figureSize];
         this.isSnake = true;
         this.canMove = true;
-        this.direction = DOWN;
+        this.direction = Direction.DOWN;
         this.blockColor = BlockColor.values()[(int) (Rnd.nextFloat(1f, 6f))];
-        for (int i = 0; i < xCoords.length; i++) {
-            xCoords[i] = initCoord;
+        for (int i = 0; i < this.xCoords.length; i++) {
+            this.xCoords[i] = initCoord;
         }
-        for (int i = MAX_FIG_SIZE - 1; i >= 0; i--) {
-            yCoords[i] = i - MAX_FIG_SIZE;
+        for (int i = figureSize - 1; i >= 0; i--) {
+            this.yCoords[i] = i - figureSize;
         }
     }
 
@@ -94,7 +96,7 @@ public class Figure {
     }
 
     protected boolean isFigureOut() {
-        for (int i = 0; i < MAX_FIG_SIZE; i++) {
+        for (int i = 0; i < figureSize; i++) {
             if (yCoords[i] < 0) {
                 return false;
             }
@@ -189,7 +191,7 @@ public class Figure {
         if (minCoords(xCoord) == 0) {
             return false;
         }
-        for (int i = 0; i < MAX_FIG_SIZE; i++) {
+        for (int i = 0; i < figureSize; i++) {
             if (xCoord[i] < GameField.MATRIX_WIDTH) {
                 if (xCoord[i] == 0) {
                     return false;
@@ -212,7 +214,7 @@ public class Figure {
         if (maxCoords(xCoord) >= GameField.MATRIX_WIDTH - 1) {
             return false;
         }
-        for (int i = 0; i < MAX_FIG_SIZE; i++) {
+        for (int i = 0; i < figureSize; i++) {
             if (xCoord[i] == GameField.MATRIX_WIDTH - 1) {
                 return false;
             }
@@ -230,20 +232,20 @@ public class Figure {
         if (isSnake && canMove) {
             switch (direction) {
                 case DOWN:
-                    nextY = yCoords[MAX_FIG_SIZE - 1] + 1;
-                    nextX = xCoords[MAX_FIG_SIZE - 1];
+                    nextY = yCoords[figureSize - 1] + 1;
+                    nextX = xCoords[figureSize - 1];
                     break;
                 case UP:
-                    nextY = yCoords[MAX_FIG_SIZE - 1] - 1;
-                    nextX = xCoords[MAX_FIG_SIZE - 1];
+                    nextY = yCoords[figureSize - 1] - 1;
+                    nextX = xCoords[figureSize - 1];
                     break;
                 case LEFT:
-                    nextX = xCoords[MAX_FIG_SIZE - 1] - 1;
-                    nextY = yCoords[MAX_FIG_SIZE - 1];
+                    nextX = xCoords[figureSize - 1] - 1;
+                    nextY = yCoords[figureSize - 1];
                     break;
                 case RIGHT:
-                    nextX = xCoords[MAX_FIG_SIZE - 1] + 1;
-                    nextY = yCoords[MAX_FIG_SIZE - 1];
+                    nextX = xCoords[figureSize - 1] + 1;
+                    nextY = yCoords[figureSize - 1];
                     break;
             }
             if (nextX >= 0 && nextY >= 0 && nextX < GameField.MATRIX_WIDTH && nextY < GameField.MATRIX_HEIGHT) {
@@ -254,7 +256,7 @@ public class Figure {
                 if (GameField.getInstance().gameMatrix[nextY][nextX] == 99) {
                     GameField.getInstance().playEatSound();
                     isSnake = false;
-                    direction = DOWN;
+                    direction = Direction.DOWN;
                     GameField.getInstance().addScore(10);
                 }
             }
@@ -262,8 +264,8 @@ public class Figure {
                 canMove = false;
                 GameField.getInstance().setGameOver(true);
             } else {
-                for (int i = 0; i < MAX_FIG_SIZE; i++) {
-                    if (i < MAX_FIG_SIZE - 1) {
+                for (int i = 0; i < figureSize; i++) {
+                    if (i < figureSize - 1) {
                         yCoords[i] = yCoords[i + 1];
                         xCoords[i] = xCoords[i + 1];
                     } else {
@@ -273,7 +275,7 @@ public class Figure {
                 }
             }
         } else {
-            for (int i = 0; i < MAX_FIG_SIZE; i++) {
+            for (int i = 0; i < figureSize; i++) {
                 nextYCoords[i] = yCoords[i] + 1;
                 if (nextYCoords[i] >= GameField.MATRIX_HEIGHT) {
                     canMove = false;
@@ -292,7 +294,7 @@ public class Figure {
                 }
             }
             if (canMove) {
-                for (int i = 0; i < MAX_FIG_SIZE; i++) {
+                for (int i = 0; i < figureSize; i++) {
                     yCoords[i]++;
                 }
             }
@@ -310,7 +312,7 @@ public class Figure {
         for (int j = 0; j < figLength; j++) {
             for (int l = 0; l < figLength; l++) {
                 matrix[l][j] = -1;
-                for (int i = 0; i < MAX_FIG_SIZE; i++) {
+                for (int i = 0; i < figureSize; i++) {
                     if (rotatexCoords[i] == j && rotateyCoords[i] == l) {
                         matrix[rotateyCoords[i]][rotatexCoords[i]] = getBlockColor().getValue();
                     }
@@ -389,29 +391,14 @@ public class Figure {
         maxxCoord = maxCoordX();
         maxyCoord = maxCoordY();
 
-        // Получаем координаты для матрицы 4х4 или 3х3
-        for (int i = 0; i < MAX_FIG_SIZE; i++) {
+        // Получаем координаты для матрицы
+        for (int i = 0; i < figureSize; i++) {
             rotatexCoords[i] = Math.abs(xCoords[i] - maxxCoord);
             rotateyCoords[i] = Math.abs(yCoords[i] - maxyCoord);
         }
 
-        if (figureMaxLength == 5) {
-
-            rotate(figureMatrix5, tmpFigureMatrix5, figureMaxLength);
-
-        }
-
-        if (figureMaxLength == 4) {
-
-            rotate(figureMatrix4, tmpFigureMatrix4, figureMaxLength);
-
-        }
-
-        if (figureMaxLength == 3) {
-
-            rotate(figureMatrix3, tmpFigureMatrix3, figureMaxLength);
-
-        }
+        //Делаем разворот
+        rotate(new int[figureMaxLength][figureMaxLength], new int[figureMaxLength][figureMaxLength], figureMaxLength);
 
         // Проверяем, возможно ли перевернуть фигуру по новым координатам
         canRotate = canRotateWithNewCoords(nextYCoords, nextXCoords);
@@ -420,7 +407,7 @@ public class Figure {
         numOfRotationTries = 0;
         if (!canRotate && minCoords(nextXCoords) <= 0 && canFigureMoveRight(nextXCoords, nextYCoords)) {
             while (!canRotate && numOfRotationTries < 3) {
-                for (int i = 0; i < MAX_FIG_SIZE; i++) {
+                for (int i = 0; i < figureSize; i++) {
                     nextXCoords[i]++;
                 }
                 numOfRotationTries++;
@@ -429,7 +416,7 @@ public class Figure {
         } else {
             if (!canRotate && maxCoords(nextXCoords) > GameField.MATRIX_WIDTH - 1 && canFigureMoveLeft(nextXCoords, nextYCoords)) {
                 while (!canRotate && numOfRotationTries < 3) {
-                    for (int i = 0; i < MAX_FIG_SIZE; i++) {
+                    for (int i = 0; i < figureSize; i++) {
                         nextXCoords[i]--;
                     }
                     numOfRotationTries++;
@@ -440,7 +427,7 @@ public class Figure {
 
         // Если возможно, делаем переворот фигуры
         if (canRotate) {
-            for (int i = 0; i < MAX_FIG_SIZE; i++) {
+            for (int i = 0; i < figureSize; i++) {
                 xCoords[i] = nextXCoords[i];
                 yCoords[i] = nextYCoords[i];
             }
@@ -450,7 +437,7 @@ public class Figure {
 
     private boolean canRotateWithNewCoords(int[] newYCoords, int[] newXCoords) {
         boolean result = true;
-        for (int i = 0; i < MAX_FIG_SIZE; i++) {
+        for (int i = 0; i < figureSize; i++) {
             if (newYCoords[i] > 0 &&
                     newYCoords[i] < GameField.MATRIX_HEIGHT &&
                     newXCoords[i] > 0 &&
@@ -470,7 +457,7 @@ public class Figure {
      */
     public void moveLeft() {
         if (minCoordX() > 0) {
-            for (int i = 0; i < MAX_FIG_SIZE; i++) {
+            for (int i = 0; i < figureSize; i++) {
                 nextXCoords[i] = xCoords[i] - 1;
             }
         }
@@ -482,7 +469,7 @@ public class Figure {
      */
     public void moveRight() {
         if (maxCoordX() < GameField.MATRIX_WIDTH - 1) {
-            for (int i = 0; i < MAX_FIG_SIZE; i++) {
+            for (int i = 0; i < figureSize; i++) {
                 nextXCoords[i] = xCoords[i] + 1;
             }
             tryTurnLeftOrRight();
@@ -495,13 +482,13 @@ public class Figure {
     private void tryTurnLeftOrRight() {
         if (isFigureOut()) {
             canTurn = true;
-            for (int i = 0; i < MAX_FIG_SIZE; i++) {
+            for (int i = 0; i < figureSize; i++) {
                 if (GameField.getInstance().gameMatrix[yCoords[i]][nextXCoords[i]] != -1) {
                     canTurn = false;
                 }
             }
             if (canTurn) {
-                for (int i = 0; i < MAX_FIG_SIZE; i++) {
+                for (int i = 0; i < figureSize; i++) {
                     xCoords[i] = nextXCoords[i];
                 }
             }
@@ -540,6 +527,10 @@ public class Figure {
 
     public BlockColor getBlockColor() {
         return blockColor;
+    }
+
+    public int getFigureSize() {
+        return figureSize;
     }
 
     public void setDirection(Direction direction) {
