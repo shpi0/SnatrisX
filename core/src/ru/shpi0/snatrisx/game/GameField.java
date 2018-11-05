@@ -37,6 +37,8 @@ public class GameField {
     private boolean isPaused = false;
     private boolean isSoundsEnabled = true;
 
+    private boolean hardcoreLvl = false;
+
     private static final GameField ourInstance = new GameField();
 
     public static GameField getInstance() {
@@ -340,6 +342,14 @@ public class GameField {
         soundPut.dispose();
         soundEat.dispose();
         soundCrash.dispose();
+    }
+
+    public boolean isHardcoreLvl() {
+        return hardcoreLvl;
+    }
+
+    public void setHardcoreLvl(boolean hardcoreLvl) {
+        this.hardcoreLvl = hardcoreLvl;
     }
 
     public void setHasLinesToDrop(boolean hasLinesToDrop) {

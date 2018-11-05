@@ -10,7 +10,10 @@ import static ru.shpi0.snatrisx.game.Direction.DOWN;
 
 public class Figure {
 
-    public static final int MAX_FIG_SIZE = 4;
+    public static final int MIN_FIG_SIZE = 4;
+    public static final int MAX_FIG_SIZE = 5;
+
+    private int figureSize;
 
     private boolean isSnake;
     private boolean canMove;
@@ -59,6 +62,7 @@ public class Figure {
      */
     public void newFigure(int initCoord) {
         this.initCoord = initCoord;
+        this.figureSize = GameField.getInstance().isHardcoreLvl() ? generateFigureLength() : 4;
         this.isSnake = true;
         this.canMove = true;
         this.direction = DOWN;
@@ -69,6 +73,17 @@ public class Figure {
         for (int i = MAX_FIG_SIZE - 1; i >= 0; i--) {
             yCoords[i] = i - MAX_FIG_SIZE;
         }
+    }
+
+    /**
+     * Generate figure length with chance of 25% to generate 5-square figure
+     * @return
+     */
+    private int generateFigureLength() {
+        if (Rnd.nextFloat(0f, 99f) > 75f) {
+            return MAX_FIG_SIZE;
+        }
+        return MIN_FIG_SIZE;
     }
 
     /**

@@ -184,12 +184,15 @@ public class MenuScreen extends BaseScreen {
         } else {
             if (buttonDiffLvlEasy.isMe(touch)) {
                 buttonDiffLvlEasy.setScale(1.1f);
+                GameField.getInstance().setHardcoreLvl(false);
             }
             if (buttonDiffLvlNormal.isMe(touch)) {
                 buttonDiffLvlNormal.setScale(1.1f);
+                GameField.getInstance().setHardcoreLvl(false);
             }
             if (buttonDiffLvlHard.isMe(touch)) {
                 buttonDiffLvlHard.setScale(1.1f);
+                GameField.getInstance().setHardcoreLvl(true);
             }
             if (!musicOnButton.isMe(touch) && !buttonDiffLvlEasy.isMe(touch) && !buttonDiffLvlNormal.isMe(touch) && !buttonDiffLvlHard.isMe(touch)) {
                 isChoosingDiffLvl = false;
