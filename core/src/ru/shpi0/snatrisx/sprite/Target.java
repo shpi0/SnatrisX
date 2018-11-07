@@ -8,7 +8,7 @@ public class Target extends Sprite {
 
     public Target(TextureRegion region) {
         super(region);
-        setHeightProportion(0.045f);
+        setHeightProportion(0.04101f);
     }
 
 }

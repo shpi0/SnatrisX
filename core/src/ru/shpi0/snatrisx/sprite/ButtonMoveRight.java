@@ -5,14 +5,15 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ru.shpi0.snatrisx.base.Sprite;
 import ru.shpi0.snatrisx.math.Rect;
 
-public class ButtonHowTo extends Sprite {
-    public ButtonHowTo(TextureRegion region) {
+public class ButtonMoveRight extends Sprite {
+    public ButtonMoveRight(TextureRegion region) {
         super(region);
         setHeightProportion(0.1f);
     }
 
     @Override
     public void resize(Rect worldBounds) {
-        pos.set(worldBounds.pos.x, worldBounds.pos.y - getHeight() * 2 - 0.02f);
+        pos.set(worldBounds.getLeft() + getWidth() + getHalfWidth(), 0f - worldBounds.getHalfHeight() / 2 - getHeight()  * 1.75f / 2);
     }
+
 }

@@ -5,16 +5,14 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ru.shpi0.snatrisx.base.Sprite;
 import ru.shpi0.snatrisx.math.Rect;
 
-public class ResumeBtn extends Sprite {
-
-    public ResumeBtn(TextureRegion region) {
+public class UIExitButton extends Sprite {
+    public UIExitButton(TextureRegion region) {
         super(region);
-        setHeightProportion(0.05f);
+        setWidthProportion(0.05f);
     }
 
     @Override
     public void resize(Rect worldBounds) {
-        pos.set(worldBounds.getRight() - getHalfWidth(), worldBounds.getTop() - getHalfHeight() - getHeight());
+        pos.set(worldBounds.getLeft() + getHalfWidth(), worldBounds.getTop() - getHeight());
     }
-
 }

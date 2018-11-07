@@ -5,16 +5,14 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ru.shpi0.snatrisx.base.Sprite;
 import ru.shpi0.snatrisx.math.Rect;
 
-public class MusicButton extends Sprite {
-
-    public MusicButton(TextureRegion region) {
+public class ScoreScreen extends Sprite {
+    public ScoreScreen(TextureRegion region) {
         super(region);
-        setHeightProportion(0.05f);
+        setHeightProportion(0.07f);
     }
 
     @Override
     public void resize(Rect worldBounds) {
-        pos.set(worldBounds.getRight() - getHalfWidth(), worldBounds.getTop() - getHalfHeight() - 2 * getHeight());
+        pos.set(worldBounds.pos.x, worldBounds.pos.y - worldBounds.getHalfHeight() * 0.5f);
     }
-
 }

@@ -1,54 +1,61 @@
 
-square.png
-size: 2048,256
+uibuttons.png
+size: 2048,512
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-square0
+close1
+  rotate: false
+  xy: 0, 0
+  size: 256, 512
+  orig: 256, 512
+  offset: 0, 0
+  index: -1
+close2
   rotate: false
   xy: 256, 0
-  size: 256, 256
-  orig: 256, 256
+  size: 256, 512
+  orig: 256, 512
   offset: 0, 0
   index: -1
-square1
-  rotate: false
-  xy: 512, 0
-  size: 256, 256
-  orig: 256, 256
-  offset: 0, 0
-  index: -1
-square2
+musicoff
   rotate: false
   xy: 768, 0
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
-square3
+musicon
+  rotate: false
+  xy: 512, 0
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+pause
   rotate: false
   xy: 1024, 0
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
-square4
+play
   rotate: false
-  xy: 1280, 0
+  xy: 1024, 256
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
-square5
+soundoff
   rotate: false
-  xy: 1536, 0
+  xy: 512, 256
   size: 256, 256
   orig: 256, 256
   offset: 0, 0
   index: -1
-target
+soundson
   rotate: false
-  xy: 0, 0
+  xy: 768, 256
   size: 256, 256
   orig: 256, 256
   offset: 0, 0

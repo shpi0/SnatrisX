@@ -58,7 +58,7 @@ public class Figure {
      */
     public void newFigure(int initCoord) {
         this.initCoord = initCoord;
-        this.figureSize = gameField.isHardcoreLvl() ? generateFigureLength() : 4;
+        this.figureSize = gameField.getDiffLvl() == DiffLvl.HARD ? generateFigureLength() : 4;
         this.rotatexCoords = new int[this.figureSize];
         this.rotateyCoords = new int[this.figureSize];
         this.xCoords = new int[this.figureSize];
@@ -68,7 +68,7 @@ public class Figure {
         this.isSnake = true;
         this.canMove = true;
         this.direction = Direction.DOWN;
-        this.blockColor = BlockColor.values()[(int) (Rnd.nextFloat(1f, 6f))];
+        this.blockColor = BlockColor.values()[(int) (Rnd.nextFloat(0f, 5f))];
         for (int i = 0; i < this.xCoords.length; i++) {
             this.xCoords[i] = initCoord;
         }

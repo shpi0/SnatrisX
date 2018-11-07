@@ -24,12 +24,12 @@ public class GameField {
     private Sound soundEat = Gdx.audio.newSound(Gdx.files.internal("sounds/eat.mp3"));
     private Sound soundPut = Gdx.audio.newSound(Gdx.files.internal("sounds/put.mp3"));
 
-    public static final int MATRIX_WIDTH = 10;
-    public static final int MATRIX_HEIGHT = 20;
+    public static final int MATRIX_WIDTH = 11;
+    public static final int MATRIX_HEIGHT = 16;
     public int[][] gameMatrix = new int[MATRIX_HEIGHT][MATRIX_WIDTH];
     private Figure figure;
-    private boolean isGameOver = false;
-    private long score = 0;
+    private boolean isGameOver = true;
+    private int score = 0;
     private int newScore;
     private float speedModificator = 1f;
     private float speed = 1f;
@@ -37,7 +37,7 @@ public class GameField {
     private boolean isPaused = false;
     private boolean isSoundsEnabled = true;
 
-    private boolean hardcoreLvl = false;
+    private DiffLvl diffLvl;
 
     private static final GameField ourInstance = new GameField();
 
@@ -55,6 +55,7 @@ public class GameField {
     public void update() {
         if (figure == null) {
             newGame();
+            isGameOver = true;
         }
         if (!isGameOver && !isPaused && !hasLinesToDrop) {
             if (figure.isCanMove()) {
@@ -85,10 +86,30 @@ public class GameField {
         return false;
     }
 
+    public void changeDiffLvl() {
+        switch (diffLvl) {
+            case EASY:
+                setDifficultModificator(0.75f);
+                diffLvl = DiffLvl.NORM;
+                break;
+            case NORM:
+                setDifficultModificator(0.65f);
+                diffLvl = DiffLvl.HARD;
+                break;
+            case HARD:
+                setDifficultModificator(1f);
+                diffLvl = DiffLvl.EASY;
+                break;
+        }
+    }
+
     /**
      * Restart the game
      */
     public void newGame() {
+        if (diffLvl == null) {
+            diffLvl = DiffLvl.EASY;
+        }
         score = 0;
         fillGameMatrix();
         isGameOver = false;
@@ -104,7 +125,7 @@ public class GameField {
      *
      * @param value
      */
-    protected void addScore(long value) {
+    protected void addScore(int value) {
         score += value;
     }
 
@@ -128,7 +149,7 @@ public class GameField {
                     // 1. Добавляем пользователю очки за каждый квадратик в поле
                     newScore = 0;
                     for (int j = 0; j < MATRIX_WIDTH; j++) {
-                        newScore += gameMatrix[i][j];
+                        newScore += gameMatrix[i][j] + 1;
                     }
                     addScore(newScore);
 
@@ -285,7 +306,7 @@ public class GameField {
         return speed;
     }
 
-    public long getScore() {
+    public int getScore() {
         return score;
     }
 
@@ -350,15 +371,16 @@ public class GameField {
         soundCrash.dispose();
     }
 
-    public boolean isHardcoreLvl() {
-        return hardcoreLvl;
-    }
-
-    public void setHardcoreLvl(boolean hardcoreLvl) {
-        this.hardcoreLvl = hardcoreLvl;
-    }
-
     public void setHasLinesToDrop(boolean hasLinesToDrop) {
         this.hasLinesToDrop = hasLinesToDrop;
     }
+
+    public boolean isSnakeMode() {
+        return figure.isSnake();
+    }
+
+    public DiffLvl getDiffLvl() {
+        return diffLvl;
+    }
+
 }

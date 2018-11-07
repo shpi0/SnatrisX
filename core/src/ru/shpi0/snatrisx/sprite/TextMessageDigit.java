@@ -1,20 +1,19 @@
 package ru.shpi0.snatrisx.sprite;
 
+
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import ru.shpi0.snatrisx.base.Sprite;
 import ru.shpi0.snatrisx.math.Rect;
 
-public class PauseBtn extends Sprite {
-
-    public PauseBtn(TextureRegion region) {
+public class TextMessageDigit extends Sprite {
+    public TextMessageDigit(TextureRegion region) {
         super(region);
-        setHeightProportion(0.05f);
+        setHeightProportion(0.07f);
     }
 
     @Override
     public void resize(Rect worldBounds) {
-        pos.set(worldBounds.getRight() - getHalfWidth(), worldBounds.getTop() - getHalfHeight() - getHeight());
+        pos.set(worldBounds.pos.x, worldBounds.pos.y - worldBounds.getHalfHeight() * 0.5f);
     }
-
 }

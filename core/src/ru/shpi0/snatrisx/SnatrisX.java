@@ -4,7 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 
-import ru.shpi0.snatrisx.screen.MenuScreen;
+import ru.shpi0.snatrisx.screen.MainScreen;
 
 public class SnatrisX extends Game {
 
@@ -55,6 +55,6 @@ public class SnatrisX extends Game {
             music.setLooping(true);
             music.play();
         }
-        setScreen(new MenuScreen(game));
+        setScreen(new MainScreen(game));
     }
 }
