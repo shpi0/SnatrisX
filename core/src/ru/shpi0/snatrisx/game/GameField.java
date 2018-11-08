@@ -36,6 +36,7 @@ public class GameField {
     private float difficultModificator = 1f;
     private boolean isPaused = false;
     private boolean isSoundsEnabled = true;
+    private Direction lastDirection;
 
     private DiffLvl diffLvl;
 
@@ -73,6 +74,7 @@ public class GameField {
                 checkLinesOnField();
             }
         }
+        lastDirection = figure.getDirection();
     }
 
     private boolean hasFieldTarget() {
@@ -258,22 +260,22 @@ public class GameField {
         if (figure.isSnake()) {
             switch (direction) {
                 case UP:
-                    if (figure.getDirection() != Direction.DOWN) {
+                    if (lastDirection != Direction.DOWN) {
                         figure.setDirection(direction);
                     }
                     break;
                 case DOWN:
-                    if (figure.getDirection() != Direction.UP) {
+                    if (lastDirection != Direction.UP) {
                         figure.setDirection(direction);
                     }
                     break;
                 case RIGHT:
-                    if (figure.getDirection() != Direction.LEFT) {
+                    if (lastDirection != Direction.LEFT) {
                         figure.setDirection(direction);
                     }
                     break;
                 case LEFT:
-                    if (figure.getDirection() != Direction.RIGHT) {
+                    if (lastDirection != Direction.RIGHT) {
                         figure.setDirection(direction);
                     }
                     break;

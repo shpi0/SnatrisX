@@ -21,7 +21,7 @@ allprojects {
     apply plugin: "eclipse"
     apply plugin: "idea"
 
-    version = '1.0.1b'
+    version = '1.2'
     ext {
         appName = "SnatrisX"
         gdxVersion = '1.9.8'

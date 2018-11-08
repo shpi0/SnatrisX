@@ -385,13 +385,13 @@ public class MainScreen extends BaseScreen {
                     if (!destroyingAnimationProcess) {
                         squares[gameField.gameMatrix[i][j]][i * 10 + j].setScale(1f);
                     }
-                    squares[gameField.gameMatrix[i][j]][i * 10 + j].pos.y = (worldBounds.getTop() - squares[gameField.gameMatrix[i][j]][i * 10 + j].getHalfHeight()) - (i * squares[gameField.gameMatrix[i][j]][i * 10 + j].getHeight()) - 0.04467f;
-                    squares[gameField.gameMatrix[i][j]][i * 10 + j].pos.x = (worldBounds.getLeft() + squares[gameField.gameMatrix[i][j]][i * 10 + j].getHalfWidth()) + (j * squares[gameField.gameMatrix[i][j]][i * 10 + j].getWidth()) + (worldBounds.getHalfWidth() - (squares[gameField.gameMatrix[i][j]][i * 10 + j].getHalfWidth() * GameField.MATRIX_WIDTH));
+                    squares[gameField.gameMatrix[i][j]][i * 10 + j].pos.y = (worldBounds.getTop() - squares[gameField.gameMatrix[i][j]][i * 10 + j].getHalfHeight()) - (i * squares[gameField.gameMatrix[i][j]][i * 10 + j].getHeight()) - 0.04467f + 0.0015f; // 0.04467f
+                    squares[gameField.gameMatrix[i][j]][i * 10 + j].pos.x = (worldBounds.getLeft() + squares[gameField.gameMatrix[i][j]][i * 10 + j].getHalfWidth()) + (j * squares[gameField.gameMatrix[i][j]][i * 10 + j].getWidth()) + (worldBounds.getHalfWidth() - (squares[gameField.gameMatrix[i][j]][i * 10 + j].getHalfWidth() * GameField.MATRIX_WIDTH)) + 0.002f;
                     squares[gameField.gameMatrix[i][j]][i * 10 + j].draw(batch);
                 }
                 if (gameField.gameMatrix[i][j] == 99) {
                     target.pos.y = (worldBounds.getTop() - target.getHalfHeight()) - (i * target.getHeight()) - 0.04467f;
-                    target.pos.x = (worldBounds.getLeft() + target.getHalfWidth()) + (j * target.getWidth()) + (worldBounds.getHalfWidth() - (target.getHalfWidth() * GameField.MATRIX_WIDTH));
+                    target.pos.x = (worldBounds.getLeft() + target.getHalfWidth()) + (j * target.getWidth()) + (worldBounds.getHalfWidth() - (target.getHalfWidth() * GameField.MATRIX_WIDTH)) + 0.002f;
                     target.draw(batch);
                 }
             }
