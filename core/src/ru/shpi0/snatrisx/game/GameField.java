@@ -8,6 +8,7 @@ import java.util.Deque;
 
 import ru.shpi0.snatrisx.base.FileProcessor;
 import ru.shpi0.snatrisx.base.GamePreferences;
+import ru.shpi0.snatrisx.base.UserBestScores;
 import ru.shpi0.snatrisx.math.Rnd;
 
 /**
@@ -43,6 +44,7 @@ public class GameField {
 
     private static final GameField ourInstance = new GameField();
     private GamePreferences gamePreferences;
+    private UserBestScores userBestScores;
 
     public static GameField getInstance() {
         return ourInstance;
@@ -331,6 +333,9 @@ public class GameField {
     }
 
     public void setGameOver(boolean gameOver) {
+        if (score > userBestScores.getLastBestScore()) {
+            userBestScores.setLastBestScore(score);
+        }
         playCrashSound();
         isGameOver = gameOver;
     }
@@ -390,5 +395,9 @@ public class GameField {
 
     public void setGamePreferences(GamePreferences gamePreferences) {
         this.gamePreferences = gamePreferences;
+    }
+
+    public void setUserBestScores(UserBestScores userBestScores) {
+        this.userBestScores = userBestScores;
     }
 }

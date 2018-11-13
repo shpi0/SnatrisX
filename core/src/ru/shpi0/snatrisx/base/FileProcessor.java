@@ -31,17 +31,23 @@ public class FileProcessor {
     }
 
     public static GamePreferences loadGamePreferencesFromFile() {
-        String s = prefsFileHandle.readString();
-        System.out.println(s);
-        return gamePreferencesFromJSON(s);
+        return gamePreferencesFromJSON(prefsFileHandle.readString());
     }
 
     public static void saveGamePreferencesToFile(GamePreferences gamePreferences) {
         prefsFileHandle.writeString(toJSON(gamePreferences), false);
     }
 
-    public static void createGamePreferencesFile() {
-        prefsFileHandle.writeString("null", false);
+    private static UserBestScores userBestScoresFromJSON(String s) {
+        return gson.fromJson(s, UserBestScores.class);
+    }
+
+    public static UserBestScores loadUserBestScoresFromFile() {
+        return userBestScoresFromJSON(scoresFileHandle.readString());
+    }
+
+    public static void saveUserBestScoresToFile(UserBestScores userBestScores) {
+        scoresFileHandle.writeString(toJSON(userBestScores), false);
     }
 
 }

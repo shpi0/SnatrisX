@@ -10,7 +10,9 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.shpi0.snatrisx.SnatrisX;
 import ru.shpi0.snatrisx.base.BaseScreen;
+import ru.shpi0.snatrisx.base.FileProcessor;
 import ru.shpi0.snatrisx.base.GamePreferences;
+import ru.shpi0.snatrisx.base.UserBestScores;
 import ru.shpi0.snatrisx.game.Direction;
 import ru.shpi0.snatrisx.game.GameField;
 import ru.shpi0.snatrisx.math.Rect;
@@ -102,6 +104,7 @@ public class MainScreen extends BaseScreen {
     private ScoreScreen scoreScreen;
 
     private GamePreferences gamePreferences = game.getGamePreferences();
+    private UserBestScores userBestScores = game.getUserBestScores();
 
     public MainScreen(SnatrisX game) {
         super(game);
@@ -175,6 +178,7 @@ public class MainScreen extends BaseScreen {
     @Override
     public void resize(Rect worldBounds) {
         GameField.getInstance().setGamePreferences(gamePreferences);
+        GameField.getInstance().setUserBestScores(userBestScores);
         bg.resize(worldBounds);
         gameOverMessage.resize(worldBounds);
         pauseMessage.resize(worldBounds);
@@ -418,6 +422,8 @@ public class MainScreen extends BaseScreen {
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
         if (uiExitButton.isMe(touch) && exitButtonTouched) {
+            FileProcessor.saveGamePreferencesToFile(gamePreferences);
+            FileProcessor.saveUserBestScoresToFile(userBestScores);
             Gdx.app.exit();
         }
         exitButtonTouched = false;

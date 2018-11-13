@@ -6,12 +6,14 @@ import com.badlogic.gdx.audio.Music;
 
 import ru.shpi0.snatrisx.base.FileProcessor;
 import ru.shpi0.snatrisx.base.GamePreferences;
+import ru.shpi0.snatrisx.base.UserBestScores;
 import ru.shpi0.snatrisx.screen.MainScreen;
 
 public class SnatrisX extends Game {
 
     private SnatrisX game;
     private GamePreferences gamePreferences;
+    private UserBestScores userBestScores;
 
     private Music music;
     private boolean isMusicAlreadyPlaying = false;
@@ -46,6 +48,10 @@ public class SnatrisX extends Game {
         return gamePreferences;
     }
 
+    public UserBestScores getUserBestScores() {
+        return userBestScores;
+    }
+
     @Override
     public void dispose() {
         music.dispose();
@@ -57,10 +63,17 @@ public class SnatrisX extends Game {
         if (FileProcessor.ifPrefsFileExist()) {
             gamePreferences = FileProcessor.loadGamePreferencesFromFile();
         } else {
-            FileProcessor.createGamePreferencesFile();
             gamePreferences = new GamePreferences();
             gamePreferences.setMusicOn(true);
             gamePreferences.setSoundsOn(true);
+            FileProcessor.saveGamePreferencesToFile(gamePreferences);
+        }
+        if (FileProcessor.ifScoresFileExist()) {
+            userBestScores = FileProcessor.loadUserBestScoresFromFile();
+        } else {
+            userBestScores = new UserBestScores();
+            userBestScores.setLastBestScore(0);
+            FileProcessor.saveUserBestScoresToFile(userBestScores);
         }
         music = Gdx.audio.newMusic(Gdx.files.internal("sounds/loop.mp3"));
         if (!isMusicAlreadyPlaying) {
