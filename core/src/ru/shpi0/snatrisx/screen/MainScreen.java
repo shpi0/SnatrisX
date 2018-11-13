@@ -1,5 +1,6 @@
 package ru.shpi0.snatrisx.screen;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.shpi0.snatrisx.SnatrisX;
 import ru.shpi0.snatrisx.base.BaseScreen;
+import ru.shpi0.snatrisx.base.GamePreferences;
 import ru.shpi0.snatrisx.game.Direction;
 import ru.shpi0.snatrisx.game.GameField;
 import ru.shpi0.snatrisx.math.Rect;
@@ -99,6 +101,8 @@ public class MainScreen extends BaseScreen {
     private Texture scoreScreenTexture;
     private ScoreScreen scoreScreen;
 
+    private GamePreferences gamePreferences = game.getGamePreferences();
+
     public MainScreen(SnatrisX game) {
         super(game);
     }
@@ -170,6 +174,7 @@ public class MainScreen extends BaseScreen {
 
     @Override
     public void resize(Rect worldBounds) {
+        GameField.getInstance().setGamePreferences(gamePreferences);
         bg.resize(worldBounds);
         gameOverMessage.resize(worldBounds);
         pauseMessage.resize(worldBounds);

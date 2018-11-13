@@ -4,15 +4,17 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 
+import ru.shpi0.snatrisx.base.FileProcessor;
+import ru.shpi0.snatrisx.base.GamePreferences;
 import ru.shpi0.snatrisx.screen.MainScreen;
 
 public class SnatrisX extends Game {
 
     private SnatrisX game;
+    private GamePreferences gamePreferences;
 
     private Music music;
     private boolean isMusicAlreadyPlaying = false;
-    private boolean musicEnabled = true;
 
     public SnatrisX() {
         super();
@@ -21,24 +23,27 @@ public class SnatrisX extends Game {
 
     public void musicStop() {
         music.stop();
-        musicEnabled = false;
+        gamePreferences.setMusicOn(false);
+        FileProcessor.saveGamePreferencesToFile(gamePreferences);
     }
 
     public void musicPlay() {
         music.play();
-        musicEnabled = true;
+        gamePreferences.setMusicOn(true);
+        FileProcessor.saveGamePreferencesToFile(gamePreferences);
     }
 
     public boolean isMusicEnabled() {
-        return musicEnabled;
-    }
-
-    public void setMusicAlreadyPlaying(boolean musicAlreadyPlaying) {
-        isMusicAlreadyPlaying = musicAlreadyPlaying;
+        return gamePreferences.isMusicOn();
     }
 
     public void setMusicEnabled(boolean musicEnabled) {
-        this.musicEnabled = musicEnabled;
+        gamePreferences.setMusicOn(musicEnabled);
+        FileProcessor.saveGamePreferencesToFile(gamePreferences);
+    }
+
+    public GamePreferences getGamePreferences() {
+        return gamePreferences;
     }
 
     @Override
@@ -49,11 +54,21 @@ public class SnatrisX extends Game {
 
     @Override
     public void create() {
+        if (FileProcessor.ifPrefsFileExist()) {
+            gamePreferences = FileProcessor.loadGamePreferencesFromFile();
+        } else {
+            FileProcessor.createGamePreferencesFile();
+            gamePreferences = new GamePreferences();
+            gamePreferences.setMusicOn(true);
+            gamePreferences.setSoundsOn(true);
+        }
         music = Gdx.audio.newMusic(Gdx.files.internal("sounds/loop.mp3"));
         if (!isMusicAlreadyPlaying) {
             music.setVolume(0.25f);
             music.setLooping(true);
-            music.play();
+            if (isMusicEnabled()) {
+                music.play();
+            }
         }
         setScreen(new MainScreen(game));
     }

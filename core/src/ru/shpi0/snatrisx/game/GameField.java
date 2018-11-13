@@ -6,6 +6,8 @@ import com.badlogic.gdx.audio.Sound;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import ru.shpi0.snatrisx.base.FileProcessor;
+import ru.shpi0.snatrisx.base.GamePreferences;
 import ru.shpi0.snatrisx.math.Rnd;
 
 /**
@@ -35,12 +37,12 @@ public class GameField {
     private float speed = 1f;
     private float difficultModificator = 1f;
     private boolean isPaused = false;
-    private boolean isSoundsEnabled = true;
     private Direction lastDirection;
 
     private DiffLvl diffLvl;
 
     private static final GameField ourInstance = new GameField();
+    private GamePreferences gamePreferences;
 
     public static GameField getInstance() {
         return ourInstance;
@@ -342,27 +344,28 @@ public class GameField {
     }
 
     public boolean isSoundsEnabled() {
-        return isSoundsEnabled;
+        return gamePreferences.isSoundsOn();
     }
 
     public void setSoundsEnabled(boolean soundsEnabled) {
-        isSoundsEnabled = soundsEnabled;
+        gamePreferences.setSoundsOn(soundsEnabled);
+        FileProcessor.saveGamePreferencesToFile(gamePreferences);
     }
 
     protected void playEatSound() {
-        if (isSoundsEnabled) {
+        if (gamePreferences.isSoundsOn()) {
             soundEat.play(1.0f);
         }
     }
 
     protected void playPutSound() {
-        if (isSoundsEnabled) {
+        if (gamePreferences.isSoundsOn()) {
             soundPut.play(1.0f);
         }
     }
 
     protected void playCrashSound() {
-        if (isSoundsEnabled) {
+        if (gamePreferences.isSoundsOn()) {
             soundCrash.play(1.0f);
         }
     }
@@ -385,4 +388,7 @@ public class GameField {
         return diffLvl;
     }
 
+    public void setGamePreferences(GamePreferences gamePreferences) {
+        this.gamePreferences = gamePreferences;
+    }
 }
