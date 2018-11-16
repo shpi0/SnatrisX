@@ -2,6 +2,7 @@ package ru.shpi0.snatrisx.screen;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -173,6 +174,26 @@ public class MainScreen extends BaseScreen {
 
         backgroundTexture = new Texture("bg.jpg");
         bg = new Background(new TextureRegion(backgroundTexture));
+
+        if (gamePreferences.getUserUUID() == null) {
+            gamePreferences.setNewUserUUID();
+        }
+
+        if (gamePreferences.getUserName() == null) {
+            Input.TextInputListener listener = new Input.TextInputListener() {
+                @Override
+                public void input(String text) {
+                    gamePreferences.setUserName(text);
+                }
+
+                @Override
+                public void canceled() {
+                    gamePreferences.setUserName("user_" + gamePreferences.getUserUUID().toString());
+                }
+            };
+            Gdx.input.getTextInput(listener, "Enter you name", "", "Input name here");
+        }
+
     }
 
     @Override

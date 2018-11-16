@@ -64,6 +64,7 @@ public class SnatrisX extends Game {
             gamePreferences = FileProcessor.loadGamePreferencesFromFile();
         } else {
             gamePreferences = new GamePreferences();
+            gamePreferences.setNewUserUUID();
             gamePreferences.setMusicOn(true);
             gamePreferences.setSoundsOn(true);
             FileProcessor.saveGamePreferencesToFile(gamePreferences);
